@@ -25,6 +25,7 @@
 
         public virtual User User { get; set; }
 
+        [Required]
         public int LocationId { get; set; }
 
         public virtual Location Location { get; set; }

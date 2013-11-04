@@ -12,5 +12,11 @@
 
         [Required]
         public decimal Longitude { get; set; }
+
+        [Required]
+        public int LocationId { get; set; }
+
+        public Location Location { get; set; }
+
     }
 }

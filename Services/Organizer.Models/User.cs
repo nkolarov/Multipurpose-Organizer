@@ -8,8 +8,10 @@
         public int Id { get; set; }
 
         [Required]
+        [StringLength (30, MinimumLength=6)]
         public string Username { get; set; }
 
+        [StringLength(30, MinimumLength = 6)]
         [Required]
         public string NickName { get; set; }
 
@@ -17,6 +19,5 @@
         public string AuthCode { get; set; }
 
         public string SessionKey { get; set; }
-
     }
 }
