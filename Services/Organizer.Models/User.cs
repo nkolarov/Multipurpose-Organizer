@@ -13,7 +13,7 @@
 
         [StringLength(30, MinimumLength = 6)]
         [Required]
-        public string NickName { get; set; }
+        public string DisplayName { get; set; }
 
         [Required]
         public string AuthCode { get; set; }

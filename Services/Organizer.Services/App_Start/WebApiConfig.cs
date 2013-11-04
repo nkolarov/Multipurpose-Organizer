@@ -14,6 +14,16 @@ namespace Organizer.Services
             // Web API routes
             config.MapHttpAttributeRoutes();
 
+
+            config.Routes.MapHttpRoute(
+                name: "UsersApi",
+                routeTemplate: "api/users/{action}",
+                defaults: new
+                {
+                    controller = "users"
+                }
+            );
+
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
