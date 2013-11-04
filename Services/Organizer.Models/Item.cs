@@ -29,11 +29,11 @@
 
         public virtual Location Location { get; set; }
 
-        public ICollection<Item> Childrens { get; set; }
+        public virtual ICollection<Item> Childrens { get; set; }
 
-        public ICollection<Note> Notes { get; set; }
+        public virtual ICollection<Note> Notes { get; set; }
 
-        public ICollection<Image> Images { get; set; }
+        public virtual ICollection<Image> Images { get; set; }
 
         public Item()
         {
