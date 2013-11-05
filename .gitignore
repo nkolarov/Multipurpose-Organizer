@@ -19,3 +19,6 @@
 /Services/Organizer.Data/obj
 /Services/Organizer.Data/bin
 /Services/Organizer.Services/Properties/PublishProfiles
+
+/Services/Organizer.DBInitializer/obj
+/Services/Organizer.DBInitializer/bin

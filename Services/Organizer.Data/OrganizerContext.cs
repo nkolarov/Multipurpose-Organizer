@@ -13,7 +13,7 @@
 
         public DbSet<Item> Items { get; set; }
 
-        public DbSet<ItemType> ItemTypes { get; set; }
+        // public DbSet<ItemType> ItemTypes { get; set; }
 
         public DbSet<Location> Locations { get; set; }
 
@@ -25,11 +25,11 @@
         {
             modelBuilder.Entity<Location>()
                 .HasRequired(t => t.Item)
-                .WithRequiredPrincipal(t => t.Location);
+                .WithOptional(t => t.Location);
 
             modelBuilder.Entity<Coordinates>()
                 .HasRequired(t => t.Location)
-                .WithRequiredPrincipal(t => t.Coordinates);
+                .WithOptional(t => t.Coordinates);
 
             modelBuilder.Entity<User>()
                 .Property(usr => usr.SessionKey)

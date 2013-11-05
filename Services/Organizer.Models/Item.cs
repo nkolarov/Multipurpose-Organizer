@@ -12,11 +12,9 @@
         public string Title { get; set; }
 
         [Required]
-        public int ItemTypeId { get; set; }
+        public  ItemType ItemType { get; set; }
 
-        public virtual ItemType ItemType { get; set; }
-
-        public int ParentId { get; set; }
+        public int? ParentId { get; set; }
 
         public virtual Item Parent { get; set; }
 
@@ -25,8 +23,7 @@
 
         public virtual User User { get; set; }
 
-        [Required]
-        public int LocationId { get; set; }
+        public int? LocationId { get; set; }
 
         public virtual Location Location { get; set; }
 

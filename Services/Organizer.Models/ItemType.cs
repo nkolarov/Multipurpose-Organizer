@@ -3,13 +3,9 @@
     using System;
     using System.ComponentModel.DataAnnotations;
 
-    public class ItemType
+    public enum ItemType
     {
-        [Key]
-        public int Id { get; set; }
-
-        [Required]
-        [MaxLength(50)]
-        public String Title { get; set; }
+        Type = 1,
+        Element = 2
     }
 }

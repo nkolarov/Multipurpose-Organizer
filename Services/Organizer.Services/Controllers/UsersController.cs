@@ -1,20 +1,21 @@
-﻿using Organizer.Data;
-using Organizer.Models;
-using Organizer.Services.Attributes;
-using Organizer.Services.Models;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Web.Http;
 using System.Web.Http.ValueProviders;
+using Organizer.Data;
+using Organizer.Models;
+using Organizer.Services.Attributes;
+using Organizer.Services.Models;
 
 namespace Organizer.Services.Controllers
 {
     public class UsersController : BaseApiController
     {
+        private const string RootUserItemTitle = "Root";
+
         private const int MinUsernameLength = 6;
 
         private const int MaxUsernameLength = 30;
@@ -66,6 +67,9 @@ namespace Organizer.Services.Controllers
                         };
 
                         context.Users.Add(user);
+
+                        AddRootUserItem(context, user);
+
                         context.SaveChanges();
 
                         user.SessionKey = this.GenerateSessionKey(user.Id);
@@ -217,6 +221,15 @@ namespace Organizer.Services.Controllers
                 throw new ArgumentOutOfRangeException(
                     "Username must contain only Latin letters, digits .,_");
             }
+        }
+
+        private static void AddRootUserItem(OrganizerContext context, User user)
+        {
+            Item rootUserItem = new Item();
+            rootUserItem.ItemType = ItemType.Type;
+            rootUserItem.Title = RootUserItemTitle;
+            rootUserItem.User = user;
+            context.Items.Add(rootUserItem);
         }
     }
 }
