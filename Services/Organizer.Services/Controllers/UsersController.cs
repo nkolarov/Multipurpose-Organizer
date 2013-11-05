@@ -14,6 +14,7 @@ namespace Organizer.Services.Controllers
 {
     public class UsersController : BaseApiController
     {
+
         private const string RootUserItemTitle = "Root";
 
         private const int MinUsernameLength = 6;
@@ -42,48 +43,43 @@ namespace Organizer.Services.Controllers
             var responseMsg = this.PerformOperationAndHandleExceptions(
                 () =>
                 {
-                    var context = new OrganizerContext();
-                    using (context)
+                    this.ValidateUsername(model.Username);
+                    this.ValidateDisplayName(model.DisplayName);
+                    this.ValidateAuthCode(model.AuthCode);
+                    var usernameToLower = model.Username.ToLower();
+                    var displayNameToLower = model.DisplayName.ToLower();
+                    var user = this.Data.Users.All().FirstOrDefault(
+                        usr => usr.Username == usernameToLower
+                        || usr.DisplayName.ToLower() == displayNameToLower);
+
+                    if (user != null)
                     {
-                        this.ValidateUsername(model.Username);
-                        this.ValidateDisplayName(model.DisplayName);
-                        this.ValidateAuthCode(model.AuthCode);
-                        var usernameToLower = model.Username.ToLower();
-                        var displayNameToLower = model.DisplayName.ToLower();
-                        var user = context.Users.FirstOrDefault(
-                            usr => usr.Username == usernameToLower
-                            || usr.DisplayName.ToLower() == displayNameToLower);
-
-                        if (user != null)
-                        {
-                            throw new InvalidOperationException("Users exists");
-                        }
-
-                        user = new User()
-                        {
-                            Username = usernameToLower,
-                            DisplayName = model.DisplayName,
-                            AuthCode = model.AuthCode
-                        };
-
-                        context.Users.Add(user);
-
-                        AddRootUserItem(context, user);
-
-                        context.SaveChanges();
-
-                        user.SessionKey = this.GenerateSessionKey(user.Id);
-                        context.SaveChanges();
-
-                        var loggedModel = new LoggedUserModel()
-                        {
-                            DisplayName = user.DisplayName,
-                            SessionKey = user.SessionKey
-                        };
-
-                        var response = this.Request.CreateResponse(HttpStatusCode.Created, loggedModel);
-                        return response;
+                        throw new InvalidOperationException("Users exists");
                     }
+
+                    user = new User()
+                    {
+                        Username = usernameToLower,
+                        DisplayName = model.DisplayName,
+                        AuthCode = model.AuthCode
+                    };
+
+                    this.Data.Users.Add(user);
+                    this.AddRootUserItem(user);
+                    this.Data.SaveChanges();
+
+                    user.SessionKey = this.GenerateSessionKey(user.Id);
+                    this.Data.SaveChanges();
+
+                    var loggedModel = new LoggedUserModel()
+                    {
+                        DisplayName = user.DisplayName,
+                        SessionKey = user.SessionKey
+                    };
+
+                    var response = this.Request.CreateResponse(HttpStatusCode.Created, loggedModel);
+                    return response;
+
                 });
 
             return responseMsg;
@@ -95,36 +91,33 @@ namespace Organizer.Services.Controllers
             var responseMsg = this.PerformOperationAndHandleExceptions(
               () =>
               {
-                  var context = new OrganizerContext();
-                  using (context)
+
+                  this.ValidateUsername(model.Username);
+                  this.ValidateAuthCode(model.AuthCode);
+                  var usernameToLower = model.Username.ToLower();
+                  var user = this.Data.Users.All().FirstOrDefault(
+                      usr => usr.Username == usernameToLower
+                      && usr.AuthCode == model.AuthCode);
+
+                  if (user == null)
                   {
-                      this.ValidateUsername(model.Username);
-                      this.ValidateAuthCode(model.AuthCode);
-                      var usernameToLower = model.Username.ToLower();
-                      var user = context.Users.FirstOrDefault(
-                          usr => usr.Username == usernameToLower
-                          && usr.AuthCode == model.AuthCode);
-
-                      if (user == null)
-                      {
-                          throw new InvalidOperationException("Invalid username or password");
-                      }
-
-                      if (user.SessionKey == null)
-                      {
-                          user.SessionKey = this.GenerateSessionKey(user.Id);
-                          context.SaveChanges();
-                      }
-
-                      var loggedModel = new LoggedUserModel()
-                      {
-                          DisplayName = user.DisplayName,
-                          SessionKey = user.SessionKey
-                      };
-
-                      var response = this.Request.CreateResponse(HttpStatusCode.Created, loggedModel);
-                      return response;
+                      throw new InvalidOperationException("Invalid username or password");
                   }
+
+                  if (user.SessionKey == null)
+                  {
+                      user.SessionKey = this.GenerateSessionKey(user.Id);
+                      this.Data.SaveChanges();
+                  }
+
+                  var loggedModel = new LoggedUserModel()
+                  {
+                      DisplayName = user.DisplayName,
+                      SessionKey = user.SessionKey
+                  };
+
+                  var response = this.Request.CreateResponse(HttpStatusCode.Created, loggedModel);
+                  return response;
               });
 
             return responseMsg;
@@ -135,20 +128,16 @@ namespace Organizer.Services.Controllers
         {
             var responseMsg = this.PerformOperationAndHandleExceptions(() =>
             {
-                var context = new OrganizerContext();
-                using (context)
+                var user = this.Data.Users.All().FirstOrDefault(u => u.SessionKey == sessionKey);
+                if (user == null)
                 {
-                    var user = context.Users.FirstOrDefault(u => u.SessionKey == sessionKey);
-                    if (user == null)
-                    {
-                        var errorMessage = "User is already logged out or does not esits!";
-                        var errResponse = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMessage);
-                        return errResponse;
-                    }
-
-                    user.SessionKey = null;
-                    context.SaveChanges();
+                    var errorMessage = "User is already logged out or does not esits!";
+                    var errResponse = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, errorMessage);
+                    return errResponse;
                 }
+
+                user.SessionKey = null;
+                this.Data.SaveChanges();
 
                 var response = this.Request.CreateResponse(HttpStatusCode.OK);
                 return response;
@@ -223,13 +212,13 @@ namespace Organizer.Services.Controllers
             }
         }
 
-        private static void AddRootUserItem(OrganizerContext context, User user)
+        private void AddRootUserItem(User user)
         {
             Item rootUserItem = new Item();
             rootUserItem.ItemType = ItemType.Type;
             rootUserItem.Title = RootUserItemTitle;
             rootUserItem.User = user;
-            context.Items.Add(rootUserItem);
+            this.Data.Items.Add(rootUserItem);
         }
     }
 }
