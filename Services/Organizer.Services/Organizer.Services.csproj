@@ -144,10 +144,13 @@
     <Compile Include="Attributes\HeaderValueProviderFactory.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ItemsController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\ItemCreateModel.cs" />
+    <Compile Include="Models\ItemModel.cs" />
     <Compile Include="Models\LoggedUserModel.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
