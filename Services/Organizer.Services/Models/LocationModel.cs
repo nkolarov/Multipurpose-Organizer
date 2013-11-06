@@ -5,6 +5,9 @@
     [DataContract]
     public class LocationModel
     {
+        [DataMember(Name = "id")]
+        public decimal Id { get; set; }
+
         [DataMember(Name = "latitude")]
         public decimal Latitude { get; set; }
 

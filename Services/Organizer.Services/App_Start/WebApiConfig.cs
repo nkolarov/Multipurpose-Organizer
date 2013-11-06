@@ -15,21 +15,20 @@ namespace Organizer.Services
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
-                name: "ItemsApi",
-                routeTemplate: "api/items/{action}/{id}",
-                defaults: new
-                {
-                    controller = "items",
-                    id = RouteParameter.Optional
-                }
-            );
-
-            config.Routes.MapHttpRoute(
                 name: "UsersApi",
                 routeTemplate: "api/users/{action}",
                 defaults: new
                 {
                     controller = "users"
+                }
+            );
+
+            config.Routes.MapHttpRoute(
+                name: "DefaultActionsApi",
+                routeTemplate: "api/{controller}/{action}/{id}",
+                defaults: new
+                {
+                    id = RouteParameter.Optional
                 }
             );
 

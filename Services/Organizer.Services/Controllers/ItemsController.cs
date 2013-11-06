@@ -221,17 +221,6 @@ namespace Organizer.Services.Controllers
             });
 
             return responseMsg;
-        }
-
-        private User GetAndValidateUser(string sessionKey)
-        {
-            var user = this.Data.Users.All().FirstOrDefault(usr => usr.SessionKey == sessionKey);
-            if (user == null)
-            {
-                throw new InvalidOperationException("Invalid username or password!");
-            }
-
-            return user;
-        }
+        }        
     }
 }
