@@ -7,31 +7,31 @@
     [DataContract]
     public class ItemDetailsModel
     {
-        [DataMember(Name = "imagedata")]
+        [DataMember(Name = "id")]
         public int Id { get; set; }
 
-        [DataMember(Name = "imagedata")]
+        [DataMember(Name = "title")]
         public string Title { get; set; }
 
-        [DataMember(Name = "imagedata")]
+        [DataMember(Name = "parented")]
         public int? ParentId { get; set; }
 
-        [DataMember(Name = "imagedata")]
+        [DataMember(Name = "itemtype")]
         public ItemType ItemType { get; set; }
 
-        [DataMember(Name = "imagedata")]
+        [DataMember(Name = "imagecount")]
         public int ImagesCount { get; set; }
 
-        [DataMember(Name = "imagedata")]
+        [DataMember(Name = "images")]
         public IEnumerable<ImageModel> Images { get; set; }
 
-        [DataMember(Name = "imagedata")]
+        [DataMember(Name = "notescount")]
         public int NotesCount { get; set; }
 
-        [DataMember(Name = "imagedata")]
+        [DataMember(Name = "notes")]
         public IEnumerable<NoteModel> Notes { get; set; }
 
-        [DataMember(Name = "imagedata")]
+        [DataMember(Name = "location")]
         public LocationModel Location { get; set; }
     }
 }

@@ -12,7 +12,7 @@
         [DataMember(Name = "itemtype")]
         public ItemType ItemType { get; set; }
 
-        [DataMember(Name = "paerntid")]
+        [DataMember(Name = "parentid")]
         public int? ParentId { get; set; }
     }
 }

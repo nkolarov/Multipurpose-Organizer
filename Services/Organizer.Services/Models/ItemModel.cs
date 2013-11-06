@@ -25,11 +25,11 @@
                         from child in item.Childrens
                         select new ItemShortModel() 
                             {
-                                Id = item.Id,
-                                ItemType = item.ItemType,
-                                ParentId = item.ParentId,
-                                Title = item.Title,
-                                ChildCount = item.Childrens.Count()
+                                Id = child.Id,
+                                ItemType = child.ItemType,
+                                ParentId = child.ParentId,
+                                Title = child.Title,
+                                ChildCount = child.Childrens.Count()
                             }
                 };
             }

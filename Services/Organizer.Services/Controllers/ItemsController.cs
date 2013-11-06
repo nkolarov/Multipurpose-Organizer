@@ -148,7 +148,7 @@ namespace Organizer.Services.Controllers
 
         [HttpPost]
         [ActionName("add")]
-        public ItemModel PostAddItem(int parentID, ItemCreateModel itemCreateModel,
+        public ItemModel PostAddItem(ItemCreateModel itemCreateModel,
             [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string sessionKey)
         {
             var responseMsg = this.PerformOperationAndHandleExceptions(() =>
@@ -159,6 +159,7 @@ namespace Organizer.Services.Controllers
                 item.Title = itemCreateModel.Title;
                 item.ParentId = itemCreateModel.ParentId;
                 item.ItemType = itemCreateModel.ItemType;
+                item.UserId = user.Id;
                 this.Data.Items.Add(item);
                 this.Data.SaveChanges();
                 var itemModel = this.Data.Items.All().Select(ItemModel.FromItem).SingleOrDefault(it => it.Id ==item.Id);
@@ -178,9 +179,14 @@ namespace Organizer.Services.Controllers
             {
                 var user = GetAndValidateUser(sessionKey);
 
-                var itemModel = this.Data.Items.All().Where(it => it.User == user).Select(ItemModel.FromItem).SingleOrDefault(it => it.Id == itemId);
+                var itemModel = this.Data.Items.All().Where(it => it.UserId == user.Id).Select(ItemModel.FromItem).SingleOrDefault(it => it.Id == itemId);
+                if (itemModel == null)
+                {
+                    throw new ArgumentException("Item Not Found!");
+                }
 
                 this.Data.Items.Delete(itemModel.Id);
+                this.Data.SaveChanges();
 
                 return Request.CreateResponse(HttpStatusCode.OK, itemModel);
             });
@@ -190,28 +196,28 @@ namespace Organizer.Services.Controllers
 
         [HttpPut]
         [ActionName("update")]
-        public ItemModel PutUpdateItem(int itemId,
+        public ItemUpdateModel PutUpdateItem(ItemUpdateModel itemUpdateModel,
             [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string sessionKey)
         {
             var responseMsg = this.PerformOperationAndHandleExceptions(() =>
             {
                 var user = GetAndValidateUser(sessionKey);
 
-                var itemModel = this.Data.Items.All().Where(it => it.User == user).Select(ItemModel.FromItem).SingleOrDefault(it => it.Id == itemId);
-
-                var item = this.Data.Items.GetById(itemModel.Id);
-
-                if (item.Title != itemModel.Title)
+                var item = this.Data.Items.All().Where(it => it.UserId == user.Id).SingleOrDefault(it => it.Id == itemUpdateModel.Id);
+                
+                if (item.Title != itemUpdateModel.Title)
                 {
-                    item.Title = itemModel.Title;
+                    item.Title = itemUpdateModel.Title;
                 }
 
-                if (item.ParentId != itemModel.ParentId)
+                if (item.ParentId != itemUpdateModel.ParentId)
                 {
-                    item.ParentId = itemModel.ParentId;
+                    item.ParentId = itemUpdateModel.ParentId;
                 }
 
-                return itemModel;
+                this.Data.SaveChanges();
+
+                return itemUpdateModel;
             });
 
             return responseMsg;
