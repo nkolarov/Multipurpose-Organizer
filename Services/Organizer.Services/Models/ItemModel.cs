@@ -1,13 +1,13 @@
-﻿using Organizer.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.Serialization;
-using System.Web;
-
-namespace Organizer.Services.Models
+﻿namespace Organizer.Services.Models
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Runtime.Serialization;
+    using Organizer.Models;
+
+    [DataContract]
     public class ItemModel
     {
         public static Expression<Func<Item, ItemModel>> FromItem
@@ -21,7 +21,16 @@ namespace Organizer.Services.Models
                     ItemType = item.ItemType,
                     ParentId = item.ParentId,
                     ChildCount = item.Childrens.Count,
-                    Childrens = item.Childrens.AsQueryable().Select(ItemModel.FromItem)
+                    Childrens = 
+                        from child in item.Childrens
+                        select new ItemShortModel() 
+                            {
+                                Id = item.Id,
+                                ItemType = item.ItemType,
+                                ParentId = item.ParentId,
+                                Title = item.Title,
+                                ChildCount = item.Childrens.Count()
+                            }
                 };
             }
         }
@@ -42,6 +51,6 @@ namespace Organizer.Services.Models
         public int ChildCount { get; set; }
 
         [DataMember(Name = "childrens")]
-        public IEnumerable<ItemModel> Childrens { get; set; }
+        public IEnumerable<ItemShortModel> Childrens { get; set; }
     }
 }

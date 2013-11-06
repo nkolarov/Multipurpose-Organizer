@@ -1,11 +1,14 @@
 ﻿namespace Organizer.Services.Models
 {
-    using System.Runtime.Serialization;
     using Organizer.Models;
+    using System.Runtime.Serialization;
 
     [DataContract]
-    public class ItemCreateModel
+    public class ItemShortModel
     {
+        [DataMember(Name = "id")]
+        public int Id { get; set; }
+
         [DataMember(Name = "title")]
         public string Title { get; set; }
 
@@ -14,5 +17,8 @@
 
         [DataMember(Name = "paerntid")]
         public int? ParentId { get; set; }
+
+        [DataMember(Name = "childcount")]
+        public int ChildCount { get; set; }
     }
 }

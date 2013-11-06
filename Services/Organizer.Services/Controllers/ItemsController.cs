@@ -20,7 +20,9 @@ namespace Organizer.Services.Controllers
             var responseMsg = this.PerformOperationAndHandleExceptions(() =>
             {
                 var user = GetAndValidateUser(sessionKey);
-                var itemsEntities = this.Data.Items.All().Where(item => item.User == user).Select(ItemModel.FromItem);
+                var allItems = this.Data.Items.All();
+                var allUserItems = allItems.Where(item => item.UserId == user.Id);
+                var itemsEntities = allUserItems.Select(ItemModel.FromItem);
 
                 return itemsEntities.OrderByDescending(item => item.Id);
             });
@@ -36,8 +38,8 @@ namespace Organizer.Services.Controllers
             var responseMsg = this.PerformOperationAndHandleExceptions(() =>
             {
                 var user = GetAndValidateUser(sessionKey);
-                var itemsEntities = this.GetAll(sessionKey).SingleOrDefault(item => item.ParentId == null)
-                    .Childrens.AsQueryable().Where(item => item.ItemType == ItemType.Type);
+                var rootElement = this.GetAll(sessionKey).SingleOrDefault(item => item.ParentId == null);
+                var itemsEntities = this.GetAll(sessionKey).Where(item => item.ParentId == rootElement.Id).Where(item => item.ItemType == ItemType.Type);
 
                 return itemsEntities.OrderByDescending(item => item.Id);
             });
@@ -46,7 +48,7 @@ namespace Organizer.Services.Controllers
         }
 
         [HttpGet]
-        [ActionName("typeLevel")]
+        [ActionName("typesAtLevel")]
         public IQueryable<ItemModel> GetTypesForParent(int parentID,
             [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string sessionKey)
         {
@@ -54,8 +56,7 @@ namespace Organizer.Services.Controllers
             {
 
                 var user = GetAndValidateUser(sessionKey);
-                var itemsEntities = this.GetAll(sessionKey).SingleOrDefault(item => item.ParentId == parentID)
-                    .Childrens.AsQueryable().Where(item => item.ItemType == ItemType.Type);
+                var itemsEntities = this.GetAll(sessionKey).Where(item => item.ParentId == parentID).Where(item => item.ItemType == ItemType.Type);
 
                 return itemsEntities.OrderByDescending(item => item.Id);
             });
@@ -64,7 +65,7 @@ namespace Organizer.Services.Controllers
         }
 
         [HttpGet]
-        [ActionName("elementLevel")]
+        [ActionName("elementsAtLevel")]
         public IQueryable<ItemModel> GetElementsForParent(int parentID,
             [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string sessionKey)
         {
@@ -72,10 +73,74 @@ namespace Organizer.Services.Controllers
             {
 
                 var user = GetAndValidateUser(sessionKey);
-                var itemsEntities = this.GetAll(sessionKey).SingleOrDefault(item => item.ParentId == parentID)
-                    .Childrens.AsQueryable().Where(item => item.ItemType == ItemType.Element);
+                var itemsEntities = this.GetAll(sessionKey).Where(item => item.ParentId == parentID).Where(item => item.ItemType == ItemType.Element);
 
                 return itemsEntities.OrderByDescending(item => item.Id);
+            });
+
+            return responseMsg;
+        }
+
+        [HttpGet]
+        [ActionName("details")]
+        public ItemDetailsModel GetElementDetails(int elementId,
+            [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string sessionKey)
+        {
+            var responseMsg = this.PerformOperationAndHandleExceptions(() =>
+            {
+                var user = GetAndValidateUser(sessionKey);
+
+                var itemModelEntity = this.GetAll(sessionKey).Where(item => item.ItemType == ItemType.Element).SingleOrDefault(item => item.Id == elementId);
+
+                if (itemModelEntity == null)
+                {
+                    throw new ArgumentException("Item Not Found!");
+                }
+
+                Item itemEntity = this.Data.Items.GetById(itemModelEntity.Id);
+                ItemDetailsModel itemDetails = new ItemDetailsModel();
+
+                itemDetails.Id = itemEntity.Id;
+                itemDetails.ParentId = itemEntity.ParentId;
+                itemDetails.Title = itemEntity.Title;
+                itemDetails.ItemType = itemEntity.ItemType;
+                itemDetails.ImagesCount = itemEntity.Images.Count();
+
+                if (itemEntity.Images.Count() > 0)
+                {
+                    itemDetails.Images =
+                        from image in itemEntity.Images
+                        select new ImageModel()
+                        {
+                            Id = image.Id,
+                            ImageData = image.ImageData,
+                            Title = image.Title
+                        };
+                }
+
+                itemDetails.NotesCount = itemEntity.Notes.Count();
+
+                if (itemEntity.Notes.Count() > 0)
+                {
+                    itemDetails.Notes =
+                        from note in itemEntity.Notes
+                        select new NoteModel()
+                        {
+                            Id = note.Id,
+                            Text = note.Text
+                        };
+                }
+
+                if (itemEntity.Location != null)
+                {
+                    itemDetails.Location = new LocationModel()
+                    {
+                        Latitude = itemEntity.Location.Coordinates.Latitude,
+                        Longitude = itemEntity.Location.Coordinates.Longitude
+                    };
+                }
+
+                return itemDetails;
             });
 
             return responseMsg;
