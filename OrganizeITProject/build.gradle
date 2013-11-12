@@ -1,6 +1,1 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-buildscript {
-    dependencies {
-        compile files('libs/gson-2.2.4.jar')
-    }
-}
