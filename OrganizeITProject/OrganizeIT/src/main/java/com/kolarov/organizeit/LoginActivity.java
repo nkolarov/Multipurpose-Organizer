@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +15,13 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.kolarov.organizeit.Models.LoggedUserModel;
+import com.kolarov.organizeit.Models.UserModel;
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Activity which displays a login screen to the user, offering registration as
@@ -32,7 +40,7 @@ public class LoginActivity extends Activity {
     /**
      * The default email to populate the email field with.
      */
-    public static final String EXTRA_EMAIL = "com.example.android.authenticatordemo.extra.EMAIL";
+    //ublic static final String EXTRA_EMAIL = "com.example.android.authenticatordemo.extra.EMAIL";
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -40,15 +48,25 @@ public class LoginActivity extends Activity {
     private UserLoginTask mAuthTask = null;
 
     // Values for email and password at the time of the login attempt.
-    private String mEmail;
+    private String mUsername;
     private String mPassword;
 
     // UI references.
-    private EditText mEmailView;
+    private EditText mUsernameView;
     private EditText mPasswordView;
     private View mLoginFormView;
     private View mLoginStatusView;
     private TextView mLoginStatusMessageView;
+
+    private int MinUsernameLength = 6;
+
+    private int MaxUsernameLength = 30;
+
+    private int MinPasswordLength = 6;
+
+    private String ValidUsernameCharacters = "qwertyuioplkjhgfdsazxcvbnmQWERTYUIOPLKJHGFDSAZXCVBNM1234567890_.";
+
+    private int AuthCodeLength = 40;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +75,9 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
 
         // Set up the login form.
-        mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
-        mEmailView = (EditText) findViewById(R.id.username);
-        mEmailView.setText(mEmail);
+        //mUsername = getIntent().getStringExtra(EXTRA_EMAIL);
+        mUsernameView = (EditText) findViewById(R.id.username);
+        //mUsernameView.setText(mUsername);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -104,11 +122,11 @@ public class LoginActivity extends Activity {
         }
 
         // Reset errors.
-        mEmailView.setError(null);
+        mUsernameView.setError(null);
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        mEmail = mEmailView.getText().toString();
+        mUsername = mUsernameView.getText().toString();
         mPassword = mPasswordView.getText().toString();
 
         boolean cancel = false;
@@ -119,21 +137,30 @@ public class LoginActivity extends Activity {
             mPasswordView.setError(getString(R.string.error_field_required));
             focusView = mPasswordView;
             cancel = true;
-        } else if (mPassword.length() < 4) {
+        } else if (mPassword.length() < MinPasswordLength) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
         }
 
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(mEmail)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+        // Check for a valid username.
+        if (TextUtils.isEmpty(mUsername)) {
+            mUsernameView.setError(getString(R.string.error_field_required));
+            focusView = mUsernameView;
             cancel = true;
-        } else if (!mEmail.contains("@")) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+        } else if (mUsername.length() < MinUsernameLength || mUsername.length() > MaxUsernameLength) {
+            mUsernameView.setError(getString(R.string.error_invalid_username));
+            focusView = mUsernameView;
             cancel = true;
+        } else {
+            for ( int i=0; i< mUsername.length(); i++ ){
+                if (ValidUsernameCharacters.indexOf(mUsername.charAt(i)) == -1){
+                    mUsernameView.setError(getString(R.string.error_invalid_username_characters));
+                    focusView = mUsernameView;
+                    cancel = true;
+                    break;
+                }
+            }
         }
 
         if (cancel) {
@@ -145,11 +172,23 @@ public class LoginActivity extends Activity {
             // perform the user login attempt.
             mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
             showProgress(true);
-            mAuthTask = new UserLoginTask();
+            mAuthTask = new UserLoginTask(this, mUsername, mPassword);
             mAuthTask.execute((Void) null);
         }
     }
 
+    public String sha1(String s) {
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("SHA-1");
+        } catch (NoSuchAlgorithmException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        digest.reset();
+        byte[] data = digest.digest(s.getBytes());
+        return String.format("%0" + (data.length*2) + "X", new BigInteger(1, data));
+    }
     /**
      * Shows the progress UI and hides the login form.
      */
@@ -194,36 +233,41 @@ public class LoginActivity extends Activity {
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+    public class UserLoginTask extends AsyncTask<Void, Void, LoggedUserModel> {
+        private String username;
+        private String authCode;
+        private Context context;
 
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
-            return true;
+        public UserLoginTask(Context context ,String username, String password){
+            this.username = username;
+            this.authCode = sha1(username + password);
+            this.context = context;
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected LoggedUserModel doInBackground(Void... params) {
+            // TODO: attempt authentication against a network service.
+
+            try {
+                UserModel loginModel = new UserModel();
+                loginModel.username = this.username;
+                loginModel.authCode = this.authCode;
+
+                HttpRequester requester = new HttpRequester(this.context);
+                LoggedUserModel model = requester.Post("users/login/", LoggedUserModel.class, null, loginModel);
+
+                return model;
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(final LoggedUserModel userModel) {
             mAuthTask = null;
             showProgress(false);
 
-            if (success) {
+            if (userModel != null) {
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
