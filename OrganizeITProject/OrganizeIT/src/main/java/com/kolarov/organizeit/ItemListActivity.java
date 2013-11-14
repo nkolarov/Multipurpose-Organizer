@@ -33,7 +33,7 @@ public class ItemListActivity extends FragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_item_list);
+        setContentView(R.layout.fragment_item_layout);
 
         if (findViewById(R.id.item_detail_container) != null) {
             // The detail container view will be present only in the

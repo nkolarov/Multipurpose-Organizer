@@ -3,7 +3,9 @@ package com.kolarov.organizeit;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -19,6 +21,8 @@ import com.kolarov.organizeit.dummy.DummyContent;
  * interface.
  */
 public class ItemListFragment extends ListFragment {
+
+    private ListView listView = null;
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -76,6 +80,12 @@ public class ItemListFragment extends ListFragment {
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
                 DummyContent.ITEMS));
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        listView = (ListView) inflater.inflate(R.layout.item_fragment_layout, null);
+        return listView;
     }
 
     @Override
