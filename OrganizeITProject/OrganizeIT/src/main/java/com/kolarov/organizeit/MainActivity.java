@@ -145,6 +145,19 @@ public class MainActivity extends ActionBarActivity {
                     handleLogoutButton((Button) view);
                 }
             });
+
+            Button browseItems = (Button) rootView.findViewById(R.id.buttonBrowseItems);
+            browseItems.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    handleBrowseButton((Button) view);
+                }
+            });
+        }
+
+        private void handleBrowseButton(Button view) {
+            Intent intent = new Intent(mActivity, ItemListActivity.class);
+            startActivity(intent);
         }
 
         private void handleLogoutButton(Button view) {
