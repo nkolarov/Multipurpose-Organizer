@@ -1,5 +1,6 @@
 package com.kolarov.organizeit;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -18,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.Button;
 import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity {
@@ -28,9 +30,10 @@ public class MainActivity extends ActionBarActivity {
         // if (!isNetworkAvailable()){ // debug
         if (isNetworkAvailable()){
             String sessionKey = getSessionKey();
-            if (sessionKey != null){ // debug enter in login activity
-            //if (sessionKey == null || sessionKey == ""){
+            if (sessionKey == null || sessionKey == ""){
                 Intent intent = new Intent(this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
 
@@ -42,7 +45,7 @@ public class MainActivity extends ActionBarActivity {
                         .commit();
             }
 
-            new LoginTask(MainActivity.this).execute();
+            //new LoginTask(MainActivity.this).execute();
         }else{
             showErrorDialogAndQuit();
         }
@@ -114,16 +117,43 @@ public class MainActivity extends ActionBarActivity {
      * A placeholder fragment containing a simple view.
      */
     public static class PlaceholderFragment extends Fragment {
+        private Activity mActivity;
 
         public PlaceholderFragment() {
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            setupButtonHandlers(rootView);
 
             return rootView;
+        }
+
+        @Override
+        public void onAttach(Activity activity) {
+            super.onAttach(activity);
+            mActivity = activity;
+        }
+
+        private void setupButtonHandlers(View rootView) {
+            Button logoutButton = (Button) rootView.findViewById(R.id.buttonLogout);
+            logoutButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    handleLogoutButton((Button) view);
+                }
+            });
+        }
+
+        private void handleLogoutButton(Button view) {
+            UserStatusManager usm = new UserStatusManager(this.mActivity);
+            usm.clearSessionKey();
+            Intent intent = new Intent(mActivity, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         }
     }
 
