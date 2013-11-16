@@ -11,6 +11,33 @@
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Browse Items"
+        android:id="@+id/buttonBrowseItems"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="About Organize IT"
+        android:id="@+id/buttonViewAbout"
+        android:layout_below="@+id/buttonBrowseItems"
+        android:layout_alignParentLeft="true"
+        android:layout_alignRight="@+id/buttonBrowseItems" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Logout"
+        android:id="@+id/buttonLogout"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignRight="@+id/buttonViewAbout" />
 
 </RelativeLayout>

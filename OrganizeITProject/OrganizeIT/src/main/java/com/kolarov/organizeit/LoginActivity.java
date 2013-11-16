@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -268,6 +269,9 @@ public class LoginActivity extends Activity {
             showProgress(false);
 
             if (userModel != null) {
+                SaveSessionKey(userModel);
+                Intent intent = new Intent(this.context, MainActivity.class);
+                startActivity(intent);
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
@@ -279,6 +283,11 @@ public class LoginActivity extends Activity {
         protected void onCancelled() {
             mAuthTask = null;
             showProgress(false);
+        }
+
+        private void SaveSessionKey(LoggedUserModel userModel) {
+            UserStatusManager usm = new UserStatusManager(this.context);
+            usm.setSessionKey(userModel.sessionKey);
         }
     }
 }

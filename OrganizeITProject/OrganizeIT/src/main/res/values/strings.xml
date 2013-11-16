@@ -10,4 +10,9 @@
     <string name="error_dialog_title">Error</string>
     <string name="error_dialog_cancel_btn_title">Close</string>
     <string name="error_invalid_username_characters">The username contains invalid characters</string>
+    <string name="title_item_list">Items</string>
+    <string name="title_item_detail">Item Detail</string>
+    <string name="item_type_asset_name">type.png</string>
+    <string name="item_element_asset_name">doc.png</string>
+
 </resources>
