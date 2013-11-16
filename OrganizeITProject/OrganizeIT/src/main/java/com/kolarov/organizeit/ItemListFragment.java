@@ -85,6 +85,9 @@ public class ItemListFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         listView = (ListView) inflater.inflate(R.layout.item_fragment_layout, null);
+
+        // set list adapter
+
         return listView;
     }
 
