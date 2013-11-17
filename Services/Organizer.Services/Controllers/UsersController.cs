@@ -123,6 +123,62 @@ namespace Organizer.Services.Controllers
             return responseMsg;
         }
 
+        [ActionName("signin")]
+        // Login or register
+        public HttpResponseMessage PostSigninUser(UserModel model)
+        {
+            var responseMsg = this.PerformOperationAndHandleExceptions(
+              () =>
+              {
+
+                  this.ValidateUsername(model.Username);
+                  this.ValidateAuthCode(model.AuthCode);
+                  var usernameToLower = model.Username.ToLower();
+                  var user = this.Data.Users.All().FirstOrDefault(
+                      usr => usr.Username == usernameToLower
+                      && usr.AuthCode == model.AuthCode);
+
+                  if (user == null)
+                  {
+                      // Check if user with that name exists
+                      user = this.Data.Users.All().FirstOrDefault(
+                      usr => usr.Username == usernameToLower);
+                      if (user != null)
+                      {
+                          throw new InvalidOperationException("Invalid password!");
+                      }
+
+                      user = new User()
+                      {
+                          Username = usernameToLower,
+                          DisplayName = model.DisplayName,
+                          AuthCode = model.AuthCode
+                      };
+
+                      this.Data.Users.Add(user);
+                      this.AddRootUserItem(user);
+                      this.Data.SaveChanges();
+                  }
+
+                  if (user.SessionKey == null)
+                  {
+                      user.SessionKey = this.GenerateSessionKey(user.Id);
+                      this.Data.SaveChanges();
+                  }
+
+                  var loggedModel = new LoggedUserModel()
+                  {
+                      DisplayName = user.DisplayName,
+                      SessionKey = user.SessionKey
+                  };
+
+                  var response = this.Request.CreateResponse(HttpStatusCode.Created, loggedModel);
+                  return response;
+              });
+
+            return responseMsg;
+        }
+
         [ActionName("logout")]
         public HttpResponseMessage PutLogoutUser([ValueProvider(typeof(HeaderValueProviderFactory<string>))] string sessionKey)
         {

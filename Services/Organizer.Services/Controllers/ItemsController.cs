@@ -31,6 +31,22 @@ namespace Organizer.Services.Controllers
         }
 
         [HttpGet]
+        [ActionName("items")]
+        public IQueryable<ItemModel> GetItemsForParent(int? parentID,
+            [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string sessionKey)
+        {
+            var responseMsg = this.PerformOperationAndHandleExceptions(() =>
+            {
+                var user = GetAndValidateUser(sessionKey);
+                var itemsEntities = this.GetAll(sessionKey).Where(item => item.ParentId == parentID).Where(item => item.ItemType == ItemType.Type);
+
+                return itemsEntities.OrderByDescending(item => item.Id);
+            });
+
+            return responseMsg;
+        }
+
+        [HttpGet]
         [ActionName("rootLevel")]
         public IQueryable<ItemModel> GetTypesForRootLevel(
             [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string sessionKey)
