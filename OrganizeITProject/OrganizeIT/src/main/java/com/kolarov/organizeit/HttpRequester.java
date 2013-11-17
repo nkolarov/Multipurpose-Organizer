@@ -28,21 +28,28 @@ public class HttpRequester {
     private String baseUrl;
     private HttpClient client;
 
+    final private String SESSION_KEY_HEADER_LABEL = "X-sessionKey";
+    final private String CONTENT_TYPE_JSON = "application/json";
+    final private String ENCODING_UTF8 = "UTF-8";
+
     public HttpRequester (Context context){
         this.baseUrl = context.getResources().getString(R.string.root_url);
         this.client = new DefaultHttpClient();
     }
 
-    public <T> T Get( String serviceUrl,  Class<T> type){
+    public <T> T Get( String serviceUrl,  Class<T> type, String sessionKey){
         HttpGet httpGet = new HttpGet(this.baseUrl + serviceUrl);
-        httpGet.setHeader("Content-type", "application/json");
+        httpGet.setHeader(HTTP.CONTENT_TYPE, CONTENT_TYPE_JSON);
+
+        if (sessionKey != null && sessionKey != "")
+            httpGet.setHeader(SESSION_KEY_HEADER_LABEL, sessionKey);
 
         try {
             HttpResponse response = this.client.execute(httpGet);
 
             if (response != null){
                 Gson gson = new Gson();
-                Reader reader = new InputStreamReader(response.getEntity().getContent(), "UTF-8");
+                Reader reader = new InputStreamReader(response.getEntity().getContent(), ENCODING_UTF8);
                 T result = gson.fromJson(reader, type);
 
                 return result;
@@ -57,17 +64,17 @@ public class HttpRequester {
 
     public <T> T Post( String serviceUrl,  Class<T> type, String sessionKey, Object data){
         HttpPost httpPost = new HttpPost(this.baseUrl + serviceUrl);
-        httpPost.setHeader("Content-type", "application/json");
+        httpPost.setHeader(HTTP.CONTENT_TYPE, CONTENT_TYPE_JSON);
 
         if (sessionKey != null && sessionKey != "")
-            httpPost.setHeader("X-sessionKey", sessionKey);
+            httpPost.setHeader(SESSION_KEY_HEADER_LABEL, sessionKey);
 
         try {
 
             if (data != null){
                 Gson gson = new Gson();
                 StringEntity se = new StringEntity( gson.toJson(data).toString());
-                se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+                se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, CONTENT_TYPE_JSON));
                 httpPost.setEntity(se);
             }
 
@@ -76,9 +83,9 @@ public class HttpRequester {
 
             if (response != null){
                 Gson gson = new Gson();
-                Reader reader = new InputStreamReader(response.getEntity().getContent(), "UTF-8");
+                Reader reader = new InputStreamReader(response.getEntity().getContent(), ENCODING_UTF8);
                 T result = gson.fromJson(reader, type);
-                int b =3;
+
                 return result;
             } else {
                 return null;

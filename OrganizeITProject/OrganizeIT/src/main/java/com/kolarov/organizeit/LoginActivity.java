@@ -253,9 +253,10 @@ public class LoginActivity extends Activity {
                 UserModel loginModel = new UserModel();
                 loginModel.username = this.username;
                 loginModel.authCode = this.authCode;
+                loginModel.displayName = this.username;
 
                 HttpRequester requester = new HttpRequester(this.context);
-                LoggedUserModel model = requester.Post("users/login/", LoggedUserModel.class, null, loginModel);
+                LoggedUserModel model = requester.Post("users/signin/", LoggedUserModel.class, null, loginModel);
 
                 return model;
             } catch (Exception e) {
