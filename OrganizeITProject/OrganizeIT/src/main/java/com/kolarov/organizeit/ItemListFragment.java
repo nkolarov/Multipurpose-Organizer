@@ -1,6 +1,8 @@
 package com.kolarov.organizeit;
 
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -10,12 +12,9 @@ import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.kolarov.organizeit.Models.ItemModel;
-import com.kolarov.organizeit.Models.LoggedUserModel;
-import com.kolarov.organizeit.Models.UserModel;
 import com.kolarov.organizeit.dummy.DummyContent;
 
 import java.util.ArrayList;
@@ -33,7 +32,13 @@ public class ItemListFragment extends ListFragment {
 
     private ListView listView = null;
 
-    private int NO_PARENT_ID = -1;
+    private ItemListAdapter mAdapter;
+
+    final private int ITEM_TYPE_ID = 1;
+
+    final private int ITEM_ELEMENT_ID = 2;
+
+    final private int NO_PARENT_ID = -1;
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -95,10 +100,10 @@ public class ItemListFragment extends ListFragment {
                 android.R.id.text1,
                 DummyContent.ITEMS));
 */
-        ItemListAdapter adapter = new ItemListAdapter(this.mActivity);
-        setListAdapter(adapter);
+        this.mAdapter = new ItemListAdapter(this.mActivity);
+        setListAdapter(this.mAdapter);
 
-        LoadItems loadItemsTask = new LoadItems(this.mActivity, adapter, NO_PARENT_ID);
+        LoadItems loadItemsTask = new LoadItems(this.mActivity, this.mAdapter, NO_PARENT_ID);
         loadItemsTask.execute();
     }
 
@@ -144,16 +149,24 @@ public class ItemListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
-/*
-        ItemListAdapter adapter = new ItemListAdapter(this.mActivity);
-        setListAdapter(adapter);
 
-        LoadItems loadItemsTask = new LoadItems(this.mActivity, adapter, (int)id);
-        loadItemsTask.execute();
-  */
-        // Notify the active callbacks interface (the activity, if the
-        // fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
+        ItemModel item = (ItemModel) this.mAdapter.getItem(position);
+
+        if (item.itemtype == ITEM_TYPE_ID){
+            /*
+                // TODO: Find a way to add current state to backstack.
+                android.support.v4.app.FragmentManager fm = getFragmentManager();
+                android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+                ft.addToBackStack("List" + position);
+                ft.commit();
+            */
+            LoadItems loadItemsTask = new LoadItems(this.mActivity, this.mAdapter, (int)id);
+            loadItemsTask.execute();
+        } else{
+            // Notify the active callbacks interface (the activity, if the
+            // fragment is attached to one) that an item has been selected.
+            mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
+        }
     }
 
     @Override
