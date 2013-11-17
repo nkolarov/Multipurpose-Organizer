@@ -6,6 +6,10 @@ import android.provider.Contacts;
 
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.kolarov.organizeit.Models.ItemModel;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -19,6 +23,7 @@ import org.json.JSONObject;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 
 /**
  * Created by N.Kolarov on 13-11-11.
@@ -52,6 +57,39 @@ public class HttpRequester {
                 Reader reader = new InputStreamReader(response.getEntity().getContent(), ENCODING_UTF8);
                 T result = gson.fromJson(reader, type);
 
+                return result;
+            } else {
+                return null;
+            }
+        }
+        catch (Exception e){
+            return null;
+        }
+    }
+
+    public <T> Iterable<T> GetMany( String serviceUrl,  Class<T> type, String sessionKey){
+        HttpGet httpGet = new HttpGet(this.baseUrl + serviceUrl);
+        httpGet.setHeader(HTTP.CONTENT_TYPE, CONTENT_TYPE_JSON);
+
+        if (sessionKey != null && sessionKey != "")
+            httpGet.setHeader(SESSION_KEY_HEADER_LABEL, sessionKey);
+
+        try {
+            HttpResponse response = this.client.execute(httpGet);
+
+            if (response != null){
+                Gson gson = new Gson();
+                Reader reader = new InputStreamReader(response.getEntity().getContent(), ENCODING_UTF8);
+                JsonParser parser = new JsonParser();
+                JsonArray array = parser.parse(reader).getAsJsonArray();
+                ArrayList<T> result = new ArrayList<T>(array.size());
+                for (int i=0; i< array.size(); i++){
+                    JsonElement jsonElement = array.get(i);
+                    T current = gson.fromJson(jsonElement, type);
+                    result.add(current);
+                }
+
+                int a = 5; // debug;
                 return result;
             } else {
                 return null;

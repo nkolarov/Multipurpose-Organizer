@@ -14,5 +14,6 @@
     <string name="title_item_detail">Item Detail</string>
     <string name="item_type_asset_name">type.png</string>
     <string name="item_element_asset_name">doc.png</string>
+    <string name="items_for_parent_url">items/forParent</string>
 
 </resources>

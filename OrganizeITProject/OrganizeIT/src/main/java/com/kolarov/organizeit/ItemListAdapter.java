@@ -44,7 +44,7 @@ public class ItemListAdapter extends BaseAdapter{
 
     @Override
     public long getItemId(int position) {
-        return position;
+        return mEntries.get(position).id;
     }
 
     @Override
@@ -80,9 +80,9 @@ public class ItemListAdapter extends BaseAdapter{
         else
             description = "";
 
-        if (description.trim().length() != 0) {
+        // if (description.trim().length() != 0)
             descriptionText.setText(description);
-        }
+
 
         return itemView;
     }
@@ -102,7 +102,8 @@ public class ItemListAdapter extends BaseAdapter{
 
     private String getImageFileName(int position) {
         String imageFile;
-        if (mEntries.get(position).itemtype == 0){
+        int type = mEntries.get(position).itemtype;
+        if (type == 1){
             imageFile = mContext.getString(R.string.item_type_asset_name);
         }
         else {
@@ -112,7 +113,13 @@ public class ItemListAdapter extends BaseAdapter{
     }
 
     public void upDateEntries(ArrayList<ItemModel> entries) {
-        mEntries = entries;
+        if (entries == null){
+            mEntries = new ArrayList<ItemModel>();
+        }
+        else {
+            mEntries = entries;
+        }
+
         notifyDataSetChanged();
     }
 }

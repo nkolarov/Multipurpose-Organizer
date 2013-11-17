@@ -1,6 +1,10 @@
 package com.kolarov.organizeit;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
@@ -9,7 +13,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.kolarov.organizeit.Models.ItemModel;
+import com.kolarov.organizeit.Models.LoggedUserModel;
+import com.kolarov.organizeit.Models.UserModel;
 import com.kolarov.organizeit.dummy.DummyContent;
+
+import java.util.ArrayList;
 
 /**
  * A list fragment representing a list of Items. This fragment
@@ -23,6 +32,8 @@ import com.kolarov.organizeit.dummy.DummyContent;
 public class ItemListFragment extends ListFragment {
 
     private ListView listView = null;
+
+    private int NO_PARENT_ID = -1;
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -63,6 +74,8 @@ public class ItemListFragment extends ListFragment {
         }
     };
 
+    private Activity mActivity;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -75,18 +88,23 @@ public class ItemListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
 
         // TODO: replace with a real list adapter.
+/*
         setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(
                 getActivity(),
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
                 DummyContent.ITEMS));
+*/
+        ItemListAdapter adapter = new ItemListAdapter(this.mActivity);
+        setListAdapter(adapter);
+
+        LoadItems loadItemsTask = new LoadItems(this.mActivity, adapter, NO_PARENT_ID);
+        loadItemsTask.execute();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         listView = (ListView) inflater.inflate(R.layout.item_fragment_layout, null);
-
-        // set list adapter
 
         return listView;
     }
@@ -111,6 +129,7 @@ public class ItemListFragment extends ListFragment {
             throw new IllegalStateException("Activity must implement fragment's callbacks.");
         }
 
+        mActivity = activity;
         mCallbacks = (Callbacks) activity;
     }
 
@@ -125,7 +144,13 @@ public class ItemListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
+/*
+        ItemListAdapter adapter = new ItemListAdapter(this.mActivity);
+        setListAdapter(adapter);
 
+        LoadItems loadItemsTask = new LoadItems(this.mActivity, adapter, (int)id);
+        loadItemsTask.execute();
+  */
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
         mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
@@ -160,5 +185,75 @@ public class ItemListFragment extends ListFragment {
         }
 
         mActivatedPosition = position;
+    }
+
+    public class LoadItems extends AsyncTask<Void, Void, Iterable<ItemModel>> {
+        private ItemListAdapter adapter;
+        private Context context;
+        private String sessionKey;
+        private int parentID;
+        final private String NO_PARRENT_URL = "?parentID=null";
+        final private String HAS_PARRENT_URL = "?parentID=";
+        private ProgressDialog dialog;
+
+        public LoadItems(Context context ,ItemListAdapter adapter, int parentID){
+            this.adapter = adapter;
+            this.context = context;
+            this.parentID = parentID;
+            this.sessionKey = new UserStatusManager(context).getSessionKey();
+            this.dialog = new ProgressDialog(this.context);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            // TODO i18n
+            this.dialog.setMessage("Please wait.. Fetching data..");
+            this.dialog.show();
+        }
+
+        @Override
+        protected Iterable<ItemModel> doInBackground(Void... params) {
+            checkUserLogin();
+
+            try {
+                HttpRequester requester = new HttpRequester(this.context);
+                String serviceURL = constructServiceURL();
+
+                Iterable<ItemModel> items = requester.GetMany(serviceURL, ItemModel.class, this.sessionKey);
+
+                return items;
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        private String constructServiceURL() {
+            String serviceURL = context.getString(R.string.items_for_parent_url);
+            if (this.parentID == NO_PARENT_ID){
+                serviceURL += NO_PARRENT_URL;
+            }
+            else {
+                serviceURL += HAS_PARRENT_URL + parentID;
+            }
+            return serviceURL;
+        }
+
+        private void checkUserLogin() {
+            if (this.sessionKey == null || this.sessionKey == ""){
+                Intent intent = new Intent(this.context, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Iterable<ItemModel> itemModels) {
+            if (this.dialog.isShowing()) {
+                this.dialog.dismiss();
+            }
+
+            adapter.upDateEntries((ArrayList) itemModels);
+        }
     }
 }
