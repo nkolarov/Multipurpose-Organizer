@@ -31,14 +31,39 @@ namespace Organizer.Services.Controllers
         }
 
         [HttpGet]
-        [ActionName("items")]
-        public IQueryable<ItemModel> GetItemsForParent(int? parentID,
+        [ActionName("all-compact")]
+        public IQueryable<ItemShortModel> GetAllShortInfo(
             [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string sessionKey)
         {
             var responseMsg = this.PerformOperationAndHandleExceptions(() =>
             {
                 var user = GetAndValidateUser(sessionKey);
-                var itemsEntities = this.GetAll(sessionKey).Where(item => item.ParentId == parentID).Where(item => item.ItemType == ItemType.Type);
+                var allItems = this.Data.Items.All();
+                var allUserItems = allItems.Where(item => item.UserId == user.Id);
+                var itemsEntities = allUserItems.Select(ItemShortModel.FromItem);
+
+                return itemsEntities.OrderByDescending(item => item.Id);
+            });
+
+            return responseMsg;
+        }
+
+        [HttpGet]
+        [ActionName("forParent")]
+        public IQueryable<ItemShortModel> GetShortItemsForParent(int? parentID,
+            [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string sessionKey)
+        {
+            var responseMsg = this.PerformOperationAndHandleExceptions(() =>
+            {
+                var user = GetAndValidateUser(sessionKey);                
+                if (parentID == null)
+                {
+                   // Get root elements
+                   var rootElement = this.GetAll(sessionKey).SingleOrDefault(item => item.ParentId == null);
+                   parentID = rootElement.Id;
+                }
+
+                var itemsEntities = this.GetAllShortInfo(sessionKey).Where(item => item.ParentId == parentID);
 
                 return itemsEntities.OrderByDescending(item => item.Id);
             });
