@@ -10,6 +10,7 @@ import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.kolarov.organizeit.Models.ItemModel;
@@ -32,11 +33,15 @@ public class ItemListFragment extends ListFragment {
 
     private ItemListAdapter mAdapter;
 
+    private int currentParent;
+
     final private int ITEM_TYPE_ID = 1;
 
     final private int ITEM_ELEMENT_ID = 2;
 
     final private int NO_PARENT_ID = 0;
+
+    final private int REQUEST_CODE_SAVE_ITEM = 1000;
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -100,16 +105,67 @@ public class ItemListFragment extends ListFragment {
 */
         this.mAdapter = new ItemListAdapter(this.mActivity);
         setListAdapter(this.mAdapter);
-
+        this.currentParent = NO_PARENT_ID;
         LoadItems loadItemsTask = new LoadItems(this.mActivity, this.mAdapter, NO_PARENT_ID);
         loadItemsTask.execute();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        listView = (ListView) inflater.inflate(R.layout.item_fragment_layout, null);
+        View rootView = inflater.inflate(R.layout.item_fragment_layout, null);
+        setupButtonHandlers(rootView);
+        return rootView;
+    }
 
-        return listView;
+    private void setupButtonHandlers(View rootView) {
+        Button addType = (Button) rootView.findViewById(R.id.buttonAddNewType);
+        addType.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                handleAddTypeButton((Button) view);
+            }
+        });
+
+        Button addElement = (Button) rootView.findViewById(R.id.buttonAddElement);
+        addElement.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                handleAddElementButton((Button) view);
+            }
+        });
+    }
+
+    private void handleAddElementButton(Button view) {
+        Intent intent = new Intent(this.mActivity, AddItemActivity.class);
+        intent.putExtra(mActivity.getString(R.string.ItemTypeExtraLabel), ITEM_ELEMENT_ID);
+        intent.putExtra(mActivity.getString(R.string.ParentIdExtraLabel), this.currentParent);
+
+        startActivityForResult(intent, REQUEST_CODE_SAVE_ITEM);
+    }
+
+
+    private void handleAddTypeButton(Button view) {
+        Intent intent = new Intent(this.mActivity, AddItemActivity.class);
+        intent.putExtra(mActivity.getString(R.string.ItemTypeExtraLabel), ITEM_TYPE_ID);
+        intent.putExtra(mActivity.getString(R.string.ParentIdExtraLabel), this.currentParent);
+
+        startActivityForResult(intent, REQUEST_CODE_SAVE_ITEM);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        int successResultCode = Activity.RESULT_OK;
+        int b =8;
+        if(requestCode == REQUEST_CODE_SAVE_ITEM && resultCode == successResultCode) {
+            int a=5;
+            refreshList();
+        }
+    }
+
+    private void refreshList() {
+        LoadItems loadItemsTask = new LoadItems(this.mActivity, this.mAdapter, this.currentParent);
+        loadItemsTask.execute();
     }
 
     @Override
@@ -158,11 +214,15 @@ public class ItemListFragment extends ListFragment {
                 ft.addToBackStack("List" + position);
                 ft.commit();
             */
+
+
             LoadItems loadItemsTask;
 
             if (item.paerntid == NO_PARENT_ID){
+                this.currentParent = NO_PARENT_ID;
                 loadItemsTask = new LoadItems(this.mActivity, this.mAdapter, NO_PARENT_ID);
-            } else{
+            } else {
+                this.currentParent = (int)id;
                 loadItemsTask = new LoadItems(this.mActivity, this.mAdapter, (int)id);
             }
 

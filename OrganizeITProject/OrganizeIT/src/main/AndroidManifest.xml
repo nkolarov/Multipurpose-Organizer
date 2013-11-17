@@ -43,6 +43,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ItemListActivity" />
         </activity>
+        <activity
+            android:name="com.kolarov.organizeit.AddItemActivity"
+            android:label="@string/title_activity_add_item" >
+        </activity>
     </application>
 
 </manifest>

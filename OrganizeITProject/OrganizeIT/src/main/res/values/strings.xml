@@ -15,5 +15,13 @@
     <string name="item_type_asset_name">type.png</string>
     <string name="item_element_asset_name">doc.png</string>
     <string name="items_for_parent_url">items/forParent</string>
+    <string name="add_element_button_title">Add element</string>
+    <string name="add_type_button_title">Add type</string>
+    <string name="title_activity_add_item">Add new Item</string>
+    <string name="enter_title_edit">Title</string>
+    <string name="ItemTypeExtraLabel">ItemTypeId</string>
+    <string name="ParentIdExtraLabel">ParentId</string>
+    <string name="save_button_label">Save</string>
+    <string name="cancel_button_label">Cancel</string>
 
 </resources>
