@@ -1,8 +1,6 @@
 package com.kolarov.organizeit;
 
 import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -38,7 +36,7 @@ public class ItemListFragment extends ListFragment {
 
     final private int ITEM_ELEMENT_ID = 2;
 
-    final private int NO_PARENT_ID = -1;
+    final private int NO_PARENT_ID = 0;
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -160,7 +158,14 @@ public class ItemListFragment extends ListFragment {
                 ft.addToBackStack("List" + position);
                 ft.commit();
             */
-            LoadItems loadItemsTask = new LoadItems(this.mActivity, this.mAdapter, (int)id);
+            LoadItems loadItemsTask;
+
+            if (item.paerntid == NO_PARENT_ID){
+                loadItemsTask = new LoadItems(this.mActivity, this.mAdapter, NO_PARENT_ID);
+            } else{
+                loadItemsTask = new LoadItems(this.mActivity, this.mAdapter, (int)id);
+            }
+
             loadItemsTask.execute();
         } else{
             // Notify the active callbacks interface (the activity, if the
