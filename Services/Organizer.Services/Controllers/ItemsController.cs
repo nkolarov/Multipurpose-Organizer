@@ -7,6 +7,7 @@ using System.Web.Http.ValueProviders;
 using Organizer.Services.Models;
 using Organizer.Services.Attributes;
 using Organizer.Models;
+using System.Collections.Generic;
 
 namespace Organizer.Services.Controllers
 {
@@ -55,17 +56,33 @@ namespace Organizer.Services.Controllers
         {
             var responseMsg = this.PerformOperationAndHandleExceptions(() =>
             {
-                var user = GetAndValidateUser(sessionKey);                
+                var user = GetAndValidateUser(sessionKey);
+                var inParentId = parentID;
                 if (parentID == null)
                 {
-                   // Get root elements
-                   var rootElement = this.GetAll(sessionKey).SingleOrDefault(item => item.ParentId == null);
-                   parentID = rootElement.Id;
+                    // Get root elements
+                    var rootElement = this.GetAll(sessionKey).SingleOrDefault(item => item.ParentId == null);
+                    parentID = rootElement.Id;
                 }
 
                 var itemsEntities = this.GetAllShortInfo(sessionKey).Where(item => item.ParentId == parentID);
 
-                return itemsEntities.OrderByDescending(item => item.Id);
+                if (inParentId != null)
+                {
+                    var rootElement = this.GetAllShortInfo(sessionKey).SingleOrDefault(item => item.Id == parentID);
+                    var rootParentElement = this.GetAllShortInfo(sessionKey).SingleOrDefault(item => item.Id == rootElement.ParentId);
+                    ItemShortModel LevelUp = new ItemShortModel();
+
+                    LevelUp.Id = rootParentElement.Id;
+                    LevelUp.Title = "... Level Up";
+                    LevelUp.ParentId = rootParentElement.ParentId;
+                    LevelUp.ChildCount = 0;
+                    LevelUp.ItemType = ItemType.Type;
+
+                    itemsEntities = itemsEntities.ToList().Concat(new List<ItemShortModel> { LevelUp }).AsQueryable();
+                }
+
+                return itemsEntities.OrderBy(item => item.ItemType).ThenBy(item => item.Title);
             });
 
             return responseMsg;
