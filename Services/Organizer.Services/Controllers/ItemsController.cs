@@ -215,7 +215,16 @@ namespace Organizer.Services.Controllers
 
                 Item item = new Item();
                 item.Title = itemCreateModel.Title;
-                item.ParentId = itemCreateModel.ParentId;
+                if (itemCreateModel.ParentId == 0 || itemCreateModel.ParentId == null)
+                {
+                    var rootUserElementId = this.GetAll(sessionKey).SingleOrDefault(it => it.ParentId == null).Id;
+                    item.ParentId = rootUserElementId;
+                }
+                else
+                {
+                    item.ParentId = itemCreateModel.ParentId;
+                }
+                
                 item.ItemType = itemCreateModel.ItemType;
                 item.UserId = user.Id;
                 this.Data.Items.Add(item);
