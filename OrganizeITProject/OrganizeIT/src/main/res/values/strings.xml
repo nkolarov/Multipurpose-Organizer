@@ -25,5 +25,7 @@
     <string name="cancel_button_label">Cancel</string>
     <string name="selected_item_id">SelectedItemId</string>
     <string name="item_id">ItemId</string>
+    <string name="title_activity_add_note">AddNoteActivity</string>
+    <string name="note_enter_hint">Enter text here</string>
 
 </resources>

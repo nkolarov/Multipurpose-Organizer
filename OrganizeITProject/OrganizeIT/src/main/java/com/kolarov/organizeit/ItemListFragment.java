@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.kolarov.organizeit.Models.ItemModel;
-import com.kolarov.organizeit.dummy.DummyContent;
 
 import java.util.ArrayList;
 
@@ -23,7 +22,7 @@ import java.util.ArrayList;
  * also supports tablet devices by allowing list items to be given an
  * 'activated' state upon selection. This helps indicate which item is
  * currently being viewed in a {@link ItemDetailFragment}.
- * <p>
+ * <p/>
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
@@ -94,19 +93,16 @@ public class ItemListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        int parentId = NO_PARENT_ID;
 
-        // TODO: replace with a real list adapter.
-/*
-        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(
-                getActivity(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                DummyContent.ITEMS));
-*/
+        if (savedInstanceState != null) {
+            parentId = savedInstanceState.getInt(getString(R.string.item_id));
+        }
+
         this.mAdapter = new ItemListAdapter(this.mActivity);
         setListAdapter(this.mAdapter);
         this.currentParent = NO_PARENT_ID;
-        LoadItems loadItemsTask = new LoadItems(this.mActivity, this.mAdapter, NO_PARENT_ID);
+        LoadItems loadItemsTask = new LoadItems(this.mActivity, this.mAdapter, parentId);
         loadItemsTask.execute();
     }
 
@@ -156,9 +152,9 @@ public class ItemListFragment extends ListFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         int successResultCode = Activity.RESULT_OK;
-        int b =8;
-        if(requestCode == REQUEST_CODE_SAVE_ITEM && resultCode == successResultCode) {
-            int a=5;
+        int b = 8;
+        if (requestCode == REQUEST_CODE_SAVE_ITEM && resultCode == successResultCode) {
+            int a = 5;
             refreshList();
         }
     }
@@ -206,7 +202,7 @@ public class ItemListFragment extends ListFragment {
 
         ItemModel item = (ItemModel) this.mAdapter.getItem(position);
 
-        if (item.itemtype == ITEM_TYPE_ID){
+        if (item.itemtype == ITEM_TYPE_ID) {
             /*
                 // TODO: Find a way to add current state to backstack.
                 android.support.v4.app.FragmentManager fm = getFragmentManager();
@@ -215,28 +211,30 @@ public class ItemListFragment extends ListFragment {
                 ft.commit();
             */
 
-
             LoadItems loadItemsTask;
 
-            if (item.paerntid == NO_PARENT_ID){
+            if (item.paerntid == NO_PARENT_ID) {
                 this.currentParent = NO_PARENT_ID;
                 loadItemsTask = new LoadItems(this.mActivity, this.mAdapter, NO_PARENT_ID);
             } else {
-                this.currentParent = (int)id;
-                loadItemsTask = new LoadItems(this.mActivity, this.mAdapter, (int)id);
+                this.currentParent = (int) id;
+                loadItemsTask = new LoadItems(this.mActivity, this.mAdapter, (int) id);
             }
 
             loadItemsTask.execute();
-        } else{
+        } else {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mCallbacks.onItemSelected((int)id);
+            mCallbacks.onItemSelected((int) id);
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+
+        outState.putInt(getString(R.string.item_id), this.currentParent);
+
         if (mActivatedPosition != ListView.INVALID_POSITION) {
             // Serialize and persist the activated item position.
             outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);
@@ -270,11 +268,11 @@ public class ItemListFragment extends ListFragment {
         private Context context;
         private String sessionKey;
         private int parentID;
-        final private String NO_PARRENT_URL = "?parentID=null";
-        final private String HAS_PARRENT_URL = "?parentID=";
+        final private String NO_PARENT_URL = "?parentID=null";
+        final private String HAS_PARENT_URL = "?parentID=";
         private ProgressDialog dialog;
 
-        public LoadItems(Context context ,ItemListAdapter adapter, int parentID){
+        public LoadItems(Context context, ItemListAdapter adapter, int parentID) {
             this.adapter = adapter;
             this.context = context;
             this.parentID = parentID;
@@ -307,17 +305,16 @@ public class ItemListFragment extends ListFragment {
 
         private String constructServiceURL() {
             String serviceURL = context.getString(R.string.items_for_parent_url);
-            if (this.parentID == NO_PARENT_ID){
-                serviceURL += NO_PARRENT_URL;
-            }
-            else {
-                serviceURL += HAS_PARRENT_URL + parentID;
+            if (this.parentID == NO_PARENT_ID) {
+                serviceURL += NO_PARENT_URL;
+            } else {
+                serviceURL += HAS_PARENT_URL + parentID;
             }
             return serviceURL;
         }
 
         private void checkUserLogin() {
-            if (this.sessionKey == null || this.sessionKey == ""){
+            if (this.sessionKey == null || this.sessionKey == "") {
                 Intent intent = new Intent(this.context, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

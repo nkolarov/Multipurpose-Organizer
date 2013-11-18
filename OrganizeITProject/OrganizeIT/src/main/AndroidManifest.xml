@@ -47,6 +47,10 @@
             android:name="com.kolarov.organizeit.AddItemActivity"
             android:label="@string/title_activity_add_item" >
         </activity>
+        <activity
+            android:name="com.kolarov.organizeit.AddNoteActivity"
+            android:label="@string/title_activity_add_note" >
+        </activity>
     </application>
 
 </manifest>
