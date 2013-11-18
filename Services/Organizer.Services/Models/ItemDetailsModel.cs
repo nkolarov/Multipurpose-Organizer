@@ -13,7 +13,7 @@
         [DataMember(Name = "title")]
         public string Title { get; set; }
 
-        [DataMember(Name = "parented")]
+        [DataMember(Name = "parentid")]
         public int? ParentId { get; set; }
 
         [DataMember(Name = "itemtype")]
@@ -22,14 +22,16 @@
         [DataMember(Name = "imagecount")]
         public int ImagesCount { get; set; }
 
+        /*
         [DataMember(Name = "images")]
         public IEnumerable<ImageModel> Images { get; set; }
+        */
 
         [DataMember(Name = "notescount")]
         public int NotesCount { get; set; }
 
         [DataMember(Name = "notes")]
-        public IEnumerable<NoteModel> Notes { get; set; }
+        public string Notes { get; set; }
 
         [DataMember(Name = "location")]
         public LocationModel Location { get; set; }

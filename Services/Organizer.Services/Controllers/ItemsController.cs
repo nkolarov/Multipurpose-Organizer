@@ -164,6 +164,7 @@ namespace Organizer.Services.Controllers
                 itemDetails.ItemType = itemEntity.ItemType;
                 itemDetails.ImagesCount = itemEntity.Images.Count();
 
+                /*
                 if (itemEntity.Images.Count() > 0)
                 {
                     itemDetails.Images =
@@ -175,18 +176,15 @@ namespace Organizer.Services.Controllers
                             Title = image.Title
                         };
                 }
+                 */
 
                 itemDetails.NotesCount = itemEntity.Notes.Count();
 
                 if (itemEntity.Notes.Count() > 0)
                 {
-                    itemDetails.Notes =
+                    itemDetails.Notes = string.Join("\n", 
                         from note in itemEntity.Notes
-                        select new NoteModel()
-                        {
-                            Id = note.Id,
-                            Text = note.Text
-                        };
+                        select note.Text);
                 }
 
                 if (itemEntity.Location != null)
