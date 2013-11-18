@@ -153,11 +153,12 @@ public class AddNoteActivity extends ActionBarActivity {
 
             @Override
             protected void onPostExecute(NoteModel noteModel) {
-                this.mActivity.setResult(Activity.RESULT_OK);
-                this.mActivity.finish();
                 if (this.dialog.isShowing()) {
                     this.dialog.dismiss();
                 }
+
+                this.mActivity.setResult(Activity.RESULT_OK);
+                this.mActivity.finish();
             }
         }
     }

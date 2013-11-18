@@ -27,5 +27,8 @@
     <string name="item_id">ItemId</string>
     <string name="title_activity_add_note">AddNoteActivity</string>
     <string name="note_enter_hint">Enter text here</string>
+    <string name="location_label">Location:</string>
+    <string name="notes_label">Notes:</string>
+    <string name="title_label">Title:</string>
 
 </resources>

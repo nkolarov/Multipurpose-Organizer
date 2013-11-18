@@ -9,7 +9,7 @@ public class LocationModel {
 
     public int id;
 
-    public DecimalFormat latitude;
+    public double latitude;
 
-    public DecimalFormat longitude;
+    public double longitude;
 }

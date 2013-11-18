@@ -1,62 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ScrollView01"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:background="#FFFFFF">
 
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/item_detail"
-        style="?android:attr/textAppearanceLarge"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp"
-        android:background="#C0FFEE"
-        android:textIsSelectable="true"
-        tools:context=".ItemDetailFragment" />
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Title:"
-        android:id="@+id/textItemTitleLabel"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true" />
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/item_detail"
+            style="?android:attr/textAppearanceLarge"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:background="#FFFFFF"
+            android:textIsSelectable="true"
+            tools:context=".ItemDetailFragment" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@+id/textViewItemTitle"
-        android:layout_below="@+id/textItemTitleLabel"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/title_label"
+            android:textColor="#666666"
+            android:id="@+id/textItemTitleLabel"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/linearLayoutItemDetailsButtons"
+            android:layout_alignLeft="@+id/textViewItemTitle" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Notes:"
-        android:id="@+id/textViewItemNotesLabel"
-        android:layout_below="@+id/textViewItemTitle"
-        android:layout_alignParentLeft="true" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:id="@+id/textViewItemTitle"
+            android:layout_below="@+id/textItemTitleLabel"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@+id/textViewItemNotes"
-        android:layout_below="@+id/textViewItemNotesLabel"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/notes_label"
+            android:textColor="#666666"
+            android:id="@+id/textViewItemNotesLabel"
+            android:layout_below="@+id/textViewItemTitle"
+            android:layout_alignParentLeft="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add Note"
-        android:id="@+id/buttonAddNote"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:id="@+id/textViewItemNotes"
+            android:layout_below="@+id/textViewItemNotesLabel"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true" />
 
-</RelativeLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/location_label"
+            android:layout_margin="10dp"
+            android:textColor="#666666"
+            android:id="@+id/textViewLocationLabel"
+            android:layout_below="@+id/textViewItemNotes"
+            android:layout_alignParentLeft="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Latitude: "
+            android:layout_marginLeft="10dp"
+            android:id="@+id/textViewLatitudeLabel"
+            android:layout_below="@+id/textViewLocationLabel"
+            android:layout_alignParentLeft="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textViewLatitudeValue"
+            android:layout_below="@+id/textViewLocationLabel"
+            android:layout_toRightOf="@+id/textViewLatitudeLabel"
+            android:layout_alignParentRight="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Longitude: "
+            android:id="@+id/textViewLongitudeLabel"
+            android:layout_marginLeft="10dp"
+            android:layout_below="@+id/textViewLatitudeLabel"
+            android:layout_alignParentLeft="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textViewLongitudeValue"
+            android:layout_below="@+id/textViewLatitudeLabel"
+            android:layout_toRightOf="@+id/textViewLongitudeLabel"
+            android:layout_alignParentRight="true" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="View on map"
+            android:layout_margin="10dp"
+            android:id="@+id/buttonViewOnMap"
+            android:layout_below="@+id/textViewLongitudeLabel"
+            android:layout_alignParentLeft="true"
+            android:visibility="invisible" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/linearLayoutItemDetailsButtons">
+
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_weight="2"
+                android:text="Add Note"
+                android:id="@+id/buttonAddNote"
+                android:layout_alignParentTop="true"
+                android:layout_alignRight="@+id/buttonViewOnMap" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:text="Set Location to current"
+                android:id="@+id/buttonSetLocation"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/buttonViewOnMap" />
+        </LinearLayout>
+    </RelativeLayout>
+</ScrollView>

@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.net.Uri;
+import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,9 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kolarov.organizeit.Models.ItemCreateModel;
 import com.kolarov.organizeit.Models.ItemDetailsModel;
+import com.kolarov.organizeit.Models.LocationModel;
 import com.kolarov.organizeit.dummy.DummyContent;
 
 /**
@@ -28,6 +33,12 @@ public class ItemDetailFragment extends Fragment {
     private int mItemId;
 
     private View mRootView;
+
+    private MyLocation myLocation;
+
+    private double mLatitude;
+
+    private double mLongitude;
 
     final private int REQUEST_CODE_SAVE_NOTE = 1001;
 
@@ -45,7 +56,7 @@ public class ItemDetailFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_item_detail, container, false);
 
         if (this.mItemId != 0) {
@@ -68,7 +79,89 @@ public class ItemDetailFragment extends Fragment {
                 handleAddNoteButton((Button) view);
             }
         });
+
+        Button setLocation = (Button) rootView.findViewById(R.id.buttonSetLocation);
+        setLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                handleSetLocationButton((Button) view);
+            }
+        });
+
+        Button viewLocationOnMap = (Button) rootView.findViewById(R.id.buttonViewOnMap);
+        viewLocationOnMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                handleViewLocationOnMapButton((Button) view);
+            }
+        });
     }
+
+    private void handleViewLocationOnMapButton(Button view) {
+        if (this.mLongitude != 0 && this.mLatitude != 0) {
+            showMap(this.mLatitude, this.mLongitude);
+        }
+    }
+
+    private void showMap(double latitude, double longitude) {
+        String label = "Item position";
+        String uriBegin = "geo:" + latitude + "," + longitude;
+        String query = latitude + "," + longitude + "(" + label + ")";
+        String encodedQuery = Uri.encode(query);
+        String uriString = uriBegin + "?q=" + encodedQuery + "&z=16";
+        if (isUriAvailable(getActivity(), uriString)){
+            Uri uri = Uri.parse(uriString);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        } else {
+            Toast.makeText(getActivity(), "Error! Google Maps application not found!", 10).show();
+        }
+    }
+
+    public static boolean isUriAvailable(Context context, String uri) {
+        Intent test = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        return context.getPackageManager().resolveActivity(test, 0) != null;
+    }
+
+    private void handleSetLocationButton(Button view) {
+        myLocation = new MyLocation(this.getActivity());
+
+        MyLocation.LocationResult locationResult = new MyLocation.LocationResult() {
+            @Override
+            public void gotLocation(final Location location) {
+                if (location != null){
+                    setupLocationRelatedViews(location);
+                    saveItemLocation(location);
+                }
+            }
+
+            ;
+        };
+
+        myLocation.getLocation(this.getActivity(), locationResult);
+    }
+
+    private void saveItemLocation(Location location) {
+        LocationModel locationModel = new LocationModel();
+        locationModel.latitude = location.getLatitude();
+        locationModel.longitude = location.getLongitude();
+        SaveItemLocationTask saveTask = new SaveItemLocationTask(getActivity(), locationModel, this.mItemId);
+        saveTask.execute();
+    }
+
+    private void setupLocationRelatedViews(Location location) {
+        this.mLatitude = location.getLatitude();
+        TextView textViewLatitude = (TextView) getActivity().findViewById(R.id.textViewLatitudeValue);
+        textViewLatitude.setText(String.valueOf(location.getLatitude()));
+
+        this.mLongitude = location.getLongitude();
+        TextView textViewLongitude = (TextView) getActivity().findViewById(R.id.textViewLongitudeValue);
+        textViewLongitude.setText(String.valueOf(location.getLongitude()));
+
+        Button showOnMapButton = (Button) getActivity().findViewById(R.id.buttonViewOnMap);
+        showOnMapButton.setVisibility(View.VISIBLE);
+    }
+
 
     private void handleAddNoteButton(Button view) {
         Activity mActivity = this.getActivity();
@@ -133,12 +226,23 @@ public class ItemDetailFragment extends Fragment {
         @Override
         protected void onPostExecute(ItemDetailsModel itemModel) {
             // TODO: setup view data.
-            if (itemModel != null){
+            if (itemModel != null) {
                 TextView textViewTitle = (TextView) this.mRootView.findViewById(R.id.textViewItemTitle);
                 textViewTitle.setText(itemModel.title);
 
                 TextView textViewNotes = (TextView) this.mRootView.findViewById(R.id.textViewItemNotes);
                 textViewNotes.setText(itemModel.notes);
+
+                TextView textViewLatitude = (TextView) this.mRootView.findViewById(R.id.textViewLatitudeValue);
+                textViewLatitude.setText(itemModel.location != null ? String.valueOf(itemModel.location.latitude) : "Not set");
+
+                TextView textViewLongitude = (TextView) this.mRootView.findViewById(R.id.textViewLongitudeValue);
+                textViewLongitude.setText(itemModel.location != null ? String.valueOf(itemModel.location.longitude) : "Not set");
+
+                if (itemModel.location != null) {
+                    Button showOnMapButton = (Button) this.mRootView.findViewById(R.id.buttonViewOnMap);
+                    showOnMapButton.setVisibility(View.VISIBLE);
+                }
             }
 
             if (this.dialog.isShowing()) {
