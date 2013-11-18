@@ -104,12 +104,15 @@ public class ItemDetailFragment extends Fragment {
     }
 
     private void showMap(double latitude, double longitude) {
-        String label = "Item position";
+        /*
+        String label = "ItemPosition";
         String uriBegin = "geo:" + latitude + "," + longitude;
         String query = latitude + "," + longitude + "(" + label + ")";
         String encodedQuery = Uri.encode(query);
         String uriString = uriBegin + "?q=" + encodedQuery + "&z=16";
-        if (isUriAvailable(getActivity(), uriString)){
+        */
+        String uriString = "geo:" + latitude + "," + longitude + "?q=" + latitude + "," + longitude;
+        if (isUriAvailable(getActivity(), uriString)) {
             Uri uri = Uri.parse(uriString);
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
@@ -129,7 +132,7 @@ public class ItemDetailFragment extends Fragment {
         MyLocation.LocationResult locationResult = new MyLocation.LocationResult() {
             @Override
             public void gotLocation(final Location location) {
-                if (location != null){
+                if (location != null) {
                     setupLocationRelatedViews(location);
                     saveItemLocation(location);
                 }
@@ -235,6 +238,10 @@ public class ItemDetailFragment extends Fragment {
 
                 TextView textViewLatitude = (TextView) this.mRootView.findViewById(R.id.textViewLatitudeValue);
                 textViewLatitude.setText(itemModel.location != null ? String.valueOf(itemModel.location.latitude) : "Not set");
+                if (itemModel.location != null) {
+                    mLongitude = itemModel.location.longitude;
+                    mLatitude = itemModel.location.latitude;
+                }
 
                 TextView textViewLongitude = (TextView) this.mRootView.findViewById(R.id.textViewLongitudeValue);
                 textViewLongitude.setText(itemModel.location != null ? String.valueOf(itemModel.location.longitude) : "Not set");
