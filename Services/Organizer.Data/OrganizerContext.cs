@@ -7,8 +7,6 @@
     {
         public OrganizerContext() : base("OrganizerDB") { }
 
-        public DbSet<Coordinates> Coordinates { get; set; }
-
         public DbSet<Image> Images { get; set; }
 
         public DbSet<Item> Items { get; set; }
@@ -26,10 +24,6 @@
             modelBuilder.Entity<Location>()
                 .HasRequired(t => t.Item)
                 .WithOptional(t => t.Location);
-
-            modelBuilder.Entity<Coordinates>()
-                .HasRequired(t => t.Location)
-                .WithOptional(t => t.Coordinates);
 
             modelBuilder.Entity<User>()
                 .Property(usr => usr.SessionKey)

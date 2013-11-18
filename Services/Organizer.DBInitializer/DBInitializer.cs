@@ -19,7 +19,7 @@ namespace Organizer.DBInitializer
             using (var context = new OrganizerContext())
             {
 
-                var user = context.Users.FirstOrDefault(u => u.Username == "bayIvan4");
+                var user = context.Users.FirstOrDefault(u => u.Username == "bayIvan5");
 
                 if (user == null)
                 {
@@ -38,8 +38,15 @@ namespace Organizer.DBInitializer
 
                     context.Items.Add(rootUserItem);
 
+                    
+
+                    Location loc = new Location();
+                    loc.Latitude = 40;
+                    loc.Longitude = 20;
+                    loc.ItemId = 4;
+                    context.Locations.Add(loc);
+
                     context.SaveChanges();
-                
             }
         }
     }

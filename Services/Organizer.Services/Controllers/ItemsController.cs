@@ -191,8 +191,8 @@ namespace Organizer.Services.Controllers
                 {
                     itemDetails.Location = new LocationModel()
                     {
-                        Latitude = itemEntity.Location.Coordinates.Latitude,
-                        Longitude = itemEntity.Location.Coordinates.Longitude
+                        Latitude = itemEntity.Location.Latitude,
+                        Longitude = itemEntity.Location.Longitude
                     };
                 }
 

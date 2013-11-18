@@ -14,7 +14,7 @@ namespace Organizer.Services.Controllers
     public class LocationsController : BaseApiController
     {
         [HttpPost]
-        [ActionName("add")]
+        [ActionName("set")]
         public LocationModel PostAddLocation(int itemId, LocationModel locationModel,
             [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string sessionKey)
         {
@@ -28,14 +28,34 @@ namespace Organizer.Services.Controllers
                     throw new ArgumentException("Item Not Found!");
                 }
 
-                Coordinates coord = new Coordinates();
-                coord.Latitude = locationModel.Latitude;
-                coord.Longitude = locationModel.Longitude;
+                var locationEntry = this.Data.Locations.All().SingleOrDefault(n => n.ItemId == itemId);
 
-                Location location = new Location();
-                location.Coordinates = coord;
-                location.ItemId = itemModel.Id;
-                this.Data.Locations.Add(location);
+                if (locationEntry == null)
+                {
+                    Location location = new Location();
+                    location.ItemId = itemId;
+                    location.Latitude = locationModel.Latitude;
+                    location.Longitude = locationModel.Longitude;
+                    itemModel.Location = location;
+                    this.Data.Locations.Add(location);
+                    this.Data.SaveChanges();
+                }
+                else 
+                {
+                    if (locationEntry.Latitude != locationModel.Latitude)
+                    {
+                        locationEntry.Latitude = locationModel.Latitude;
+                    }
+
+                    if (locationEntry.Longitude != locationModel.Longitude)
+                    {
+                        locationEntry.Longitude = locationModel.Longitude;
+                    }
+
+                    this.Data.SaveChanges();
+                }
+
+                
 
                 return locationModel;
             });
@@ -59,7 +79,6 @@ namespace Organizer.Services.Controllers
                 }
 
                 this.Data.Locations.Delete(locationModel.Id);
-                this.Data.Coordinates.Delete(locationModel.CoordinatesId);
                 this.Data.SaveChanges();
 
                 return Request.CreateResponse(HttpStatusCode.OK, locationModel);
@@ -83,14 +102,14 @@ namespace Organizer.Services.Controllers
                     throw new ArgumentException("Note Not Found!");
                 }
 
-                if (locationEntry.Coordinates.Latitude != locationModel.Latitude)
+                if (locationEntry.Latitude != locationModel.Latitude)
                 {
-                    locationEntry.Coordinates.Latitude = locationModel.Latitude;
+                    locationEntry.Latitude = locationModel.Latitude;
                 }
 
-                if (locationEntry.Coordinates.Longitude != locationModel.Longitude)
+                if (locationEntry.Longitude != locationModel.Longitude)
                 {
-                    locationEntry.Coordinates.Longitude = locationModel.Longitude;
+                    locationEntry.Longitude = locationModel.Longitude;
                 }
 
                 this.Data.SaveChanges();

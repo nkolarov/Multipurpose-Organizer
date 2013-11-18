@@ -9,9 +9,9 @@
         public int Id { get; set; }
 
         [DataMember(Name = "latitude")]
-        public decimal Latitude { get; set; }
+        public double Latitude { get; set; }
 
         [DataMember(Name = "longitude")]
-        public decimal Longitude { get; set; }
+        public double Longitude { get; set; }
     }
 }

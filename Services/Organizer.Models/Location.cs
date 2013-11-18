@@ -8,9 +8,10 @@
         public int Id { get; set; }
 
         [Required]
-        public int CoordinatesId { get; set; }
+        public double Latitude { get; set; }
 
-        public virtual Coordinates Coordinates { get; set; }
+        [Required]
+        public double Longitude { get; set; }
 
         [Required]
         public int ItemId { get; set; }

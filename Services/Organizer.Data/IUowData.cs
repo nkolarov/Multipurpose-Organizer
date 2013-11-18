@@ -4,8 +4,6 @@
 
     public interface IUowData
     {
-        IRepository<Coordinates> Coordinates { get; }
-
         IRepository<Image> Images { get; }
 
         IRepository<Item> Items { get; }

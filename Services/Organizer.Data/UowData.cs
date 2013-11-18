@@ -35,11 +35,6 @@ namespace Organizer.Data
             return (IRepository<T>)this.repositories[typeof(T)];
         }
 
-        public IRepository<Coordinates> Coordinates
-        {
-            get { return this.GetRepository<Coordinates>(); }
-        }
-
         public IRepository<Image> Images
         {
             get { return this.GetRepository<Image>(); }
