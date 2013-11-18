@@ -1,5 +1,9 @@
 package com.kolarov.organizeit;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -7,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.kolarov.organizeit.Models.ItemCreateModel;
+import com.kolarov.organizeit.Models.ItemDetailsModel;
 import com.kolarov.organizeit.dummy.DummyContent;
 
 /**
@@ -16,21 +22,9 @@ import com.kolarov.organizeit.dummy.DummyContent;
  * on handsets.
  */
 public class ItemDetailFragment extends Fragment {
-    /**
-     * The fragment argument representing the item ID that this fragment
-     * represents.
-     */
-    public static final String ARG_ITEM_ID = "item_id";
 
-    /**
-     * The dummy content this fragment is presenting.
-     */
-    private DummyContent.DummyItem mItem;
+    private int mItemId;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public ItemDetailFragment() {
     }
 
@@ -38,11 +32,8 @@ public class ItemDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+        if (getArguments().containsKey(getString(R.string.item_id))) {
+            this.mItemId = getArguments().getInt(getString(R.string.item_id));
         }
     }
 
@@ -51,11 +42,58 @@ public class ItemDetailFragment extends Fragment {
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_item_detail, container, false);
 
-        // Show the dummy content as text in a TextView.
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.item_detail)).setText(mItem.content);
+        if (this.mItemId != 0) {
+            GetItemDetailsTask saveItemTask = new GetItemDetailsTask(getActivity(), this.mItemId);
+            saveItemTask.execute();
+            //((TextView) rootView.findViewById(R.id.item_detail)).setText(mItem.content);
         }
 
         return rootView;
+    }
+
+    public class GetItemDetailsTask extends AsyncTask<Void, Void, ItemDetailsModel> {
+        private Activity mActivity;
+        private ProgressDialog dialog;
+        private Context context;
+        private int mElementId;
+        private String mSessionKey;
+
+        public GetItemDetailsTask(Activity activity, int elementId) {
+            this.mActivity = activity;
+            this.context = this.mActivity;
+            this.mElementId = elementId;
+            this.mSessionKey = new UserStatusManager(context).getSessionKey();
+            this.dialog = new ProgressDialog(this.context);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            // TODO i18n
+            this.dialog.setMessage("Please wait.. Loading details..");
+            this.dialog.show();
+        }
+
+        @Override
+        protected ItemDetailsModel doInBackground(Void... params) {
+            try {
+                HttpRequester requester = new HttpRequester(this.context);
+                String serviceURL = "items/details?elementId=" + this.mElementId;
+                ItemDetailsModel model = requester.Get(serviceURL, ItemDetailsModel.class, this.mSessionKey);
+
+                return model;
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(ItemDetailsModel itemModel) {
+            // TODO: setup view data.
+            if (this.dialog.isShowing()) {
+                this.dialog.dismiss();
+            }
+            //this.mActivity.setResult(Activity.RESULT_OK);
+            //this.mActivity.finish();
+        }
     }
 }

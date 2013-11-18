@@ -23,5 +23,7 @@
     <string name="ParentIdExtraLabel">ParentId</string>
     <string name="save_button_label">Save</string>
     <string name="cancel_button_label">Cancel</string>
+    <string name="selected_item_id">SelectedItemId</string>
+    <string name="item_id">ItemId</string>
 
 </resources>
