@@ -13,6 +13,7 @@ import com.kolarov.organizeit.Models.ItemModel;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -117,6 +118,33 @@ public class HttpRequester {
             }
 
             HttpResponse response = this.client.execute(httpPost);
+            int a = 5; // debug
+
+            if (response != null){
+                Gson gson = new Gson();
+                Reader reader = new InputStreamReader(response.getEntity().getContent(), ENCODING_UTF8);
+                T result = gson.fromJson(reader, type);
+
+                return result;
+            } else {
+                return null;
+            }
+        }
+        catch (Exception e){
+            return null;
+        }
+    }
+
+    public <T> T Delete( String serviceUrl,  Class<T> type, String sessionKey){
+        HttpDelete httpDelete = new HttpDelete(this.baseUrl + serviceUrl);
+        httpDelete.setHeader(HTTP.CONTENT_TYPE, CONTENT_TYPE_JSON);
+
+        if (sessionKey != null && sessionKey != "")
+            httpDelete.setHeader(SESSION_KEY_HEADER_LABEL, sessionKey);
+
+        try {
+
+            HttpResponse response = this.client.execute(httpDelete);
             int a = 5; // debug
 
             if (response != null){

@@ -47,6 +47,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/save_button_label"
                 android:id="@+id/buttonSaveItem"
+                android:drawableLeft="@android:drawable/ic_menu_save"
                 android:layout_weight="1"
                 android:layout_below="@+id/editTitle"
                 android:layout_alignParentLeft="true" />
@@ -56,6 +57,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/cancel_button_label"
                 android:id="@+id/buttonCancelSave"
+                android:drawableLeft="@android:drawable/ic_menu_close_clear_cancel"
                 android:layout_weight="1"
                 android:layout_alignParentBottom="true"
                 android:layout_alignRight="@+id/linearLayout" />

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
-import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -17,10 +16,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.kolarov.organizeit.Models.ItemCreateModel;
 import com.kolarov.organizeit.Models.ItemDetailsModel;
 import com.kolarov.organizeit.Models.LocationModel;
-import com.kolarov.organizeit.dummy.DummyContent;
+import com.kolarov.organizeit.Tasks.SaveItemLocationTask;
 
 /**
  * A fragment representing a single Item detail screen.

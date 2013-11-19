@@ -18,6 +18,7 @@
         android:layout_height="wrap_content"
         android:text="Browse Items"
         android:id="@+id/buttonBrowseItems"
+        android:drawableLeft="@android:drawable/ic_menu_agenda"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true" />
@@ -25,6 +26,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:drawableLeft="@android:drawable/ic_menu_info_details"
         android:text="About Organize IT"
         android:id="@+id/buttonViewAbout"
         android:layout_below="@+id/buttonBrowseItems"
@@ -36,6 +38,7 @@
         android:layout_height="wrap_content"
         android:text="Logout"
         android:id="@+id/buttonLogout"
+        android:drawableLeft="@android:drawable/ic_partial_secure"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignRight="@+id/buttonViewAbout" />

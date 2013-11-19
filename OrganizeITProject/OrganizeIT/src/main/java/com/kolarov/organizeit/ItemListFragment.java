@@ -109,6 +109,8 @@ public class ItemListFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.item_fragment_layout, null);
+        //ListView lv = (ListView) rootView.findViewById(R.id.listViewRootItemsList);
+        //registerForContextMenu(lv);
         setupButtonHandlers(rootView);
         return rootView;
     }

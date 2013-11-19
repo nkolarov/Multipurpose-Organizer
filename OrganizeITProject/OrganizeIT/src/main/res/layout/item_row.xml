@@ -1,38 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants" >
 
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
-
-    <ImageView
-        android:id="@+id/listImage"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:layout_margin="10dp"
-        android:background="#FFFFFF" />
+        android:layout_below="@+id/editTitle">
 
-    <TextView
-        android:id="@+id/listTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/listImage"
-        android:layout_toRightOf="@+id/listImage"
-        android:text="A List item title"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/listDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/listTitle"
-        android:layout_marginTop="5dp"
-        android:maxLines="4"
-        android:layout_toRightOf="@+id/listImage"
-        android:text="The List item description"
-        android:textSize="14sp" />
+            <ImageView
+                android:id="@+id/listImage"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="10dp"
+                android:background="#FFFFFF" />
 
+            <TextView
+                android:id="@+id/listTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/listImage"
+                android:layout_toRightOf="@+id/listImage"
+                android:text="A List item title"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/listDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/listTitle"
+                android:layout_marginTop="5dp"
+                android:maxLines="4"
+                android:layout_toRightOf="@+id/listImage"
+                android:text="The List item description"
+                android:textSize="14sp" />
+
+
+        </RelativeLayout>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:layout_gravity="center"
+            android:src="@android:drawable/ic_menu_delete"
+            android:id="@+id/buttonDeleteItem" />
+    </LinearLayout>
 </RelativeLayout>

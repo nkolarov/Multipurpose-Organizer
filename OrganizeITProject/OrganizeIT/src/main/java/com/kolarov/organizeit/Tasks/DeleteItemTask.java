@@ -1,29 +1,29 @@
-package com.kolarov.organizeit;
+package com.kolarov.organizeit.Tasks;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.kolarov.organizeit.HttpRequester;
+import com.kolarov.organizeit.Models.ItemShortModel;
 import com.kolarov.organizeit.Models.LocationModel;
+import com.kolarov.organizeit.UserStatusManager;
 
 /**
- * Created by N.Kolarov on 13-11-18.
+ * Created by N.Kolarov on 13-11-19.
  */
-
-public class SaveItemLocationTask extends AsyncTask<Void, Void, LocationModel> {
+public class DeleteItemTask extends AsyncTask<Void, Void, ItemShortModel> {
     private Activity mActivity;
     private ProgressDialog dialog;
     private Context context;
     private int mItemId;
-    private LocationModel mLocationModel;
     private String mSessionKey;
 
-    public SaveItemLocationTask(Activity activity, LocationModel locationModel, int itemId) {
+    public DeleteItemTask(Activity activity,  int itemId) {
         this.mActivity = activity;
         this.context = this.mActivity;
         this.mItemId = itemId;
-        this.mLocationModel = locationModel;
         this.mSessionKey = new UserStatusManager(context).getSessionKey();
         this.dialog = new ProgressDialog(this.context);
     }
@@ -31,17 +31,17 @@ public class SaveItemLocationTask extends AsyncTask<Void, Void, LocationModel> {
     @Override
     protected void onPreExecute() {
         // TODO i18n
-        this.dialog.setMessage("Please wait.. Saving item location..");
+        this.dialog.setMessage("Please wait.. Deleting item..");
         this.dialog.show();
     }
 
     @Override
-    protected LocationModel doInBackground(Void... params) {
+    protected ItemShortModel doInBackground(Void... params) {
         try {
-            String serviceURL = "locations/set?itemId=" + this.mItemId;
+            String serviceURL = "items/delete?itemId=" + this.mItemId;
 
             HttpRequester requester = new HttpRequester(this.context);
-            LocationModel model = requester.Post(serviceURL, LocationModel.class, this.mSessionKey, this.mLocationModel);
+            ItemShortModel model = requester.Delete(serviceURL, ItemShortModel.class, this.mSessionKey);
 
             int a = 5;
             return model;
@@ -51,11 +51,9 @@ public class SaveItemLocationTask extends AsyncTask<Void, Void, LocationModel> {
     }
 
     @Override
-    protected void onPostExecute(LocationModel locationModel) {
+    protected void onPostExecute(ItemShortModel itemShortModel) {
         if (this.dialog.isShowing()) {
             this.dialog.dismiss();
         }
     }
 }
-
-

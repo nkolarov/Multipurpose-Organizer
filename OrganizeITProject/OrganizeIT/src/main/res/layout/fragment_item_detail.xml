@@ -110,6 +110,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="View on map"
+            android:drawableLeft="@android:drawable/ic_menu_mapmode"
             android:layout_margin="10dp"
             android:id="@+id/buttonViewOnMap"
             android:layout_below="@+id/textViewLongitudeLabel"
@@ -127,8 +128,9 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:layout_weight="2"
+                android:layout_weight="1.8"
                 android:text="Add Note"
+                android:drawableLeft="@android:drawable/ic_input_add"
                 android:id="@+id/buttonAddNote"
                 android:layout_alignParentTop="true"
                 android:layout_alignRight="@+id/buttonViewOnMap" />
@@ -138,6 +140,7 @@
                 android:layout_height="60dp"
                 android:layout_weight="1"
                 android:text="Set Location to current"
+                android:drawableLeft="@android:drawable/ic_menu_mylocation"
                 android:id="@+id/buttonSetLocation"
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/buttonViewOnMap" />
