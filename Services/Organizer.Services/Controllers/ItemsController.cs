@@ -244,19 +244,46 @@ namespace Organizer.Services.Controllers
             {
                 var user = GetAndValidateUser(sessionKey);
 
-                var itemModel = this.Data.Items.All().Where(it => it.UserId == user.Id).Select(ItemModel.FromItem).SingleOrDefault(it => it.Id == itemId);
+                var itemModel = this.Data.Items.All().Where(it => it.UserId == user.Id).Select(ItemShortModel.FromItem).SingleOrDefault(it => it.Id == itemId);
                 if (itemModel == null)
                 {
                     throw new ArgumentException("Item Not Found!");
                 }
 
-                this.Data.Items.Delete(itemModel.Id);
+                DeleteItem(itemId);
                 this.Data.SaveChanges();
 
                 return Request.CreateResponse(HttpStatusCode.OK, itemModel);
             });
 
             return responseMsg;
+        }
+
+        private void DeleteItem(int itemId)
+        {
+            var item = this.Data.Items.All().SingleOrDefault(it => it.Id == itemId);
+            if (item.Location != null)
+            {
+                this.Data.Locations.Delete(item.Location);
+                item.Location = null;
+                item.LocationId = null;
+            }
+
+            while(item.Images.Count > 0){
+                this.Data.Images.Delete(item.Images.First());
+            }
+
+            while (item.Notes.Count > 0)
+            {
+                this.Data.Notes.Delete(item.Notes.First());
+            }
+
+            while (item.Childrens.Count > 0)
+            {
+                DeleteItem(item.Childrens.First().Id);
+            }
+
+            this.Data.Items.Delete(item);
         }
 
         [HttpPut]
