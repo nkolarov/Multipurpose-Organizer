@@ -97,12 +97,15 @@ public class ItemListFragment extends ListFragment {
 
         if (savedInstanceState != null) {
             parentId = savedInstanceState.getInt(getString(R.string.item_id));
+            this.currentParent = parentId;
+        }else{
+            this.currentParent = NO_PARENT_ID;
         }
 
         this.mAdapter = new ItemListAdapter(this.mActivity);
         setListAdapter(this.mAdapter);
-        this.currentParent = NO_PARENT_ID;
-        LoadItems loadItemsTask = new LoadItems(this.mActivity, this.mAdapter, parentId);
+
+        LoadItems loadItemsTask = new LoadItems(this.mActivity, this.mAdapter, this.currentParent);
         loadItemsTask.execute();
     }
 
