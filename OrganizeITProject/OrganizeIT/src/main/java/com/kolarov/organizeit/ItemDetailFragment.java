@@ -22,9 +22,6 @@ import com.kolarov.organizeit.Tasks.SaveItemLocationTask;
 
 /**
  * A fragment representing a single Item detail screen.
- * This fragment is either contained in a {@link ItemListActivity}
- * in two-pane mode (on tablets) or a {@link ItemDetailActivity}
- * on handsets.
  */
 public class ItemDetailFragment extends Fragment {
 
@@ -60,7 +57,6 @@ public class ItemDetailFragment extends Fragment {
         if (this.mItemId != 0) {
             GetItemDetailsTask saveItemTask = new GetItemDetailsTask(getActivity(), this.mItemId, rootView);
             saveItemTask.execute();
-            //((TextView) rootView.findViewById(R.id.item_detail)).setText(mItem.content);
         }
 
         this.mRootView = rootView;
@@ -102,20 +98,13 @@ public class ItemDetailFragment extends Fragment {
     }
 
     private void showMap(double latitude, double longitude) {
-        /*
-        String label = "ItemPosition";
-        String uriBegin = "geo:" + latitude + "," + longitude;
-        String query = latitude + "," + longitude + "(" + label + ")";
-        String encodedQuery = Uri.encode(query);
-        String uriString = uriBegin + "?q=" + encodedQuery + "&z=16";
-        */
         String uriString = "geo:" + latitude + "," + longitude + "?q=" + latitude + "," + longitude;
         if (isUriAvailable(getActivity(), uriString)) {
             Uri uri = Uri.parse(uriString);
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         } else {
-            Toast.makeText(getActivity(), "Error! Google Maps application not found!", 10).show();
+            Toast.makeText(getActivity(), getActivity().getString(R.string.maps_not_found_message), 10).show();
         }
     }
 
@@ -187,6 +176,9 @@ public class ItemDetailFragment extends Fragment {
         loadItemsTask.execute();
     }
 
+    /**
+     * A task that gets the item details data from a web service.
+     */
     public class GetItemDetailsTask extends AsyncTask<Void, Void, ItemDetailsModel> {
         private Activity mActivity;
         private ProgressDialog dialog;
@@ -207,7 +199,7 @@ public class ItemDetailFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             // TODO i18n
-            this.dialog.setMessage("Please wait.. Loading details..");
+            this.dialog.setMessage(mActivity.getString(R.string.loading_details_message));
             this.dialog.show();
         }
 
@@ -215,7 +207,7 @@ public class ItemDetailFragment extends Fragment {
         protected ItemDetailsModel doInBackground(Void... params) {
             try {
                 HttpRequester requester = new HttpRequester(this.context);
-                String serviceURL = "items/details?elementId=" + this.mElementId;
+                String serviceURL = mActivity.getString(R.string.load_tem_details_Service_url) + this.mElementId;
                 ItemDetailsModel model = requester.Get(serviceURL, ItemDetailsModel.class, this.mSessionKey);
 
                 return model;
@@ -226,32 +218,35 @@ public class ItemDetailFragment extends Fragment {
 
         @Override
         protected void onPostExecute(ItemDetailsModel itemModel) {
-            // TODO: setup view data.
             if (itemModel != null) {
-                TextView textViewTitle = (TextView) this.mRootView.findViewById(R.id.textViewItemTitle);
-                textViewTitle.setText(itemModel.title);
-
-                TextView textViewNotes = (TextView) this.mRootView.findViewById(R.id.textViewItemNotes);
-                textViewNotes.setText(itemModel.notes);
-
-                TextView textViewLatitude = (TextView) this.mRootView.findViewById(R.id.textViewLatitudeValue);
-                textViewLatitude.setText(itemModel.location != null ? String.valueOf(itemModel.location.latitude) : "Not set");
-                if (itemModel.location != null) {
-                    mLongitude = itemModel.location.longitude;
-                    mLatitude = itemModel.location.latitude;
-                }
-
-                TextView textViewLongitude = (TextView) this.mRootView.findViewById(R.id.textViewLongitudeValue);
-                textViewLongitude.setText(itemModel.location != null ? String.valueOf(itemModel.location.longitude) : "Not set");
-
-                if (itemModel.location != null) {
-                    Button showOnMapButton = (Button) this.mRootView.findViewById(R.id.buttonViewOnMap);
-                    showOnMapButton.setVisibility(View.VISIBLE);
-                }
+                setupViewData(itemModel);
             }
 
             if (this.dialog.isShowing()) {
                 this.dialog.dismiss();
+            }
+        }
+
+        private void setupViewData(ItemDetailsModel itemModel) {
+            TextView textViewTitle = (TextView) this.mRootView.findViewById(R.id.textViewItemTitle);
+            textViewTitle.setText(itemModel.title);
+
+            TextView textViewNotes = (TextView) this.mRootView.findViewById(R.id.textViewItemNotes);
+            textViewNotes.setText(itemModel.notes);
+
+            TextView textViewLatitude = (TextView) this.mRootView.findViewById(R.id.textViewLatitudeValue);
+            textViewLatitude.setText(itemModel.location != null ? String.valueOf(itemModel.location.latitude) : "Not set");
+            if (itemModel.location != null) {
+                mLongitude = itemModel.location.longitude;
+                mLatitude = itemModel.location.latitude;
+            }
+
+            TextView textViewLongitude = (TextView) this.mRootView.findViewById(R.id.textViewLongitudeValue);
+            textViewLongitude.setText(itemModel.location != null ? String.valueOf(itemModel.location.longitude) : "Not set");
+
+            if (itemModel.location != null) {
+                Button showOnMapButton = (Button) this.mRootView.findViewById(R.id.buttonViewOnMap);
+                showOnMapButton.setVisibility(View.VISIBLE);
             }
         }
     }

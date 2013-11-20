@@ -18,17 +18,11 @@ import com.kolarov.organizeit.Models.ItemModel;
 import java.util.ArrayList;
 
 /**
- * A list fragment representing a list of Items. This fragment
- * also supports tablet devices by allowing list items to be given an
- * 'activated' state upon selection. This helps indicate which item is
- * currently being viewed in a {@link ItemDetailFragment}.
- * <p/>
+ * A list fragment representing a list of Items.
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
 public class ItemListFragment extends ListFragment {
-
-    private ListView listView = null;
 
     private ItemListAdapter mAdapter;
 
@@ -98,7 +92,7 @@ public class ItemListFragment extends ListFragment {
         if (savedInstanceState != null) {
             parentId = savedInstanceState.getInt(getString(R.string.item_id));
             this.currentParent = parentId;
-        }else{
+        } else {
             this.currentParent = NO_PARENT_ID;
         }
 
@@ -112,9 +106,8 @@ public class ItemListFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.item_fragment_layout, null);
-        //ListView lv = (ListView) rootView.findViewById(R.id.listViewRootItemsList);
-        //registerForContextMenu(lv);
         setupButtonHandlers(rootView);
+
         return rootView;
     }
 
@@ -157,9 +150,8 @@ public class ItemListFragment extends ListFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         int successResultCode = Activity.RESULT_OK;
-        int b = 8;
+
         if (requestCode == REQUEST_CODE_SAVE_ITEM && resultCode == successResultCode) {
-            int a = 5;
             refreshList();
         }
     }
@@ -208,14 +200,6 @@ public class ItemListFragment extends ListFragment {
         ItemModel item = (ItemModel) this.mAdapter.getItem(position);
 
         if (item.itemtype == ITEM_TYPE_ID) {
-            /*
-                // TODO: Find a way to add current state to backstack.
-                android.support.v4.app.FragmentManager fm = getFragmentManager();
-                android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-                ft.addToBackStack("List" + position);
-                ft.commit();
-            */
-
             LoadItems loadItemsTask;
 
             if (item.paerntid == NO_PARENT_ID) {
@@ -228,8 +212,6 @@ public class ItemListFragment extends ListFragment {
 
             loadItemsTask.execute();
         } else {
-            // Notify the active callbacks interface (the activity, if the
-            // fragment is attached to one) that an item has been selected.
             mCallbacks.onItemSelected((int) id);
         }
     }
@@ -268,6 +250,10 @@ public class ItemListFragment extends ListFragment {
         mActivatedPosition = position;
     }
 
+    /**
+     * Created by N.Kolarov on 13-11-18. *
+     * A task that loads the list items from a web service.
+     */
     public class LoadItems extends AsyncTask<Void, Void, Iterable<ItemModel>> {
         private ItemListAdapter adapter;
         private Context context;
@@ -288,7 +274,7 @@ public class ItemListFragment extends ListFragment {
         @Override
         protected void onPreExecute() {
             // TODO i18n
-            this.dialog.setMessage("Please wait.. Fetching data..");
+            this.dialog.setMessage(context.getString(com.kolarov.organizeit.R.string.fetch_data_message));
             this.dialog.show();
         }
 

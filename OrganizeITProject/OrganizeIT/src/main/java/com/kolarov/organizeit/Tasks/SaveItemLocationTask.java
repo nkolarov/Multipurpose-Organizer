@@ -7,10 +7,12 @@ import android.os.AsyncTask;
 
 import com.kolarov.organizeit.HttpRequester;
 import com.kolarov.organizeit.Models.LocationModel;
+import com.kolarov.organizeit.R;
 import com.kolarov.organizeit.UserStatusManager;
 
 /**
- * Created by N.Kolarov on 13-11-18.
+ * Created by N.Kolarov on 13-11-18. *
+ *  A task that sends the data to the web service and saves the item location.
  */
 
 public class SaveItemLocationTask extends AsyncTask<Void, Void, LocationModel> {
@@ -33,14 +35,14 @@ public class SaveItemLocationTask extends AsyncTask<Void, Void, LocationModel> {
     @Override
     protected void onPreExecute() {
         // TODO i18n
-        this.dialog.setMessage("Please wait.. Saving item location..");
+        this.dialog.setMessage(mActivity.getString(R.string.save_item_location_message));
         this.dialog.show();
     }
 
     @Override
     protected LocationModel doInBackground(Void... params) {
         try {
-            String serviceURL = "locations/set?itemId=" + this.mItemId;
+            String serviceURL = mActivity.getString(R.string.save_item_location_serice_url) + this.mItemId;
 
             HttpRequester requester = new HttpRequester(this.context);
             LocationModel model = requester.Post(serviceURL, LocationModel.class, this.mSessionKey, this.mLocationModel);

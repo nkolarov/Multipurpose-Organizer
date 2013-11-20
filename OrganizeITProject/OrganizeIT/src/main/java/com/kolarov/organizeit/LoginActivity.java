@@ -30,20 +30,6 @@ import java.security.NoSuchAlgorithmException;
  */
 public class LoginActivity extends Activity {
     /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello",
-            "bar@example.com:world"
-    };
-
-    /**
-     * The default email to populate the email field with.
-     */
-    //ublic static final String EXTRA_EMAIL = "com.example.android.authenticatordemo.extra.EMAIL";
-
-    /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginTask mAuthTask = null;
@@ -67,19 +53,13 @@ public class LoginActivity extends Activity {
 
     private String ValidUsernameCharacters = "qwertyuioplkjhgfdsazxcvbnmQWERTYUIOPLKJHGFDSAZXCVBNM1234567890_.";
 
-    private int AuthCodeLength = 40;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_login);
 
-        // Set up the login form.
-        //mUsername = getIntent().getStringExtra(EXTRA_EMAIL);
         mUsernameView = (EditText) findViewById(R.id.username);
-        //mUsernameView.setText(mUsername);
-
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -102,14 +82,6 @@ public class LoginActivity extends Activity {
                 attemptLogin();
             }
         });
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.login, menu);
-        return true;
     }
 
     /**
@@ -154,8 +126,8 @@ public class LoginActivity extends Activity {
             focusView = mUsernameView;
             cancel = true;
         } else {
-            for ( int i=0; i< mUsername.length(); i++ ){
-                if (ValidUsernameCharacters.indexOf(mUsername.charAt(i)) == -1){
+            for (int i = 0; i < mUsername.length(); i++) {
+                if (ValidUsernameCharacters.indexOf(mUsername.charAt(i)) == -1) {
                     mUsernameView.setError(getString(R.string.error_invalid_username_characters));
                     focusView = mUsernameView;
                     cancel = true;
@@ -178,6 +150,9 @@ public class LoginActivity extends Activity {
         }
     }
 
+    /**
+     * Converts given string to sha1.
+     */
     public String sha1(String s) {
         MessageDigest digest = null;
         try {
@@ -188,8 +163,9 @@ public class LoginActivity extends Activity {
         }
         digest.reset();
         byte[] data = digest.digest(s.getBytes());
-        return String.format("%0" + (data.length*2) + "X", new BigInteger(1, data));
+        return String.format("%0" + (data.length * 2) + "X", new BigInteger(1, data));
     }
+
     /**
      * Shows the progress UI and hides the login form.
      */
@@ -239,7 +215,7 @@ public class LoginActivity extends Activity {
         private String authCode;
         private Context context;
 
-        public UserLoginTask(Context context ,String username, String password){
+        public UserLoginTask(Context context, String username, String password) {
             this.username = username;
             this.authCode = sha1(username + password);
             this.context = context;
@@ -247,8 +223,6 @@ public class LoginActivity extends Activity {
 
         @Override
         protected LoggedUserModel doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
             try {
                 UserModel loginModel = new UserModel();
                 loginModel.username = this.username;
@@ -256,7 +230,7 @@ public class LoginActivity extends Activity {
                 loginModel.displayName = this.username;
 
                 HttpRequester requester = new HttpRequester(this.context);
-                LoggedUserModel model = requester.Post("users/signin/", LoggedUserModel.class, null, loginModel);
+                LoggedUserModel model = requester.Post(getString(R.string.signin_service_url), LoggedUserModel.class, null, loginModel);
 
                 return model;
             } catch (Exception e) {

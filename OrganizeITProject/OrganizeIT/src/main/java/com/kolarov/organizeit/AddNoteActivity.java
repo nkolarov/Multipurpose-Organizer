@@ -9,8 +9,6 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.text.Editable;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -38,28 +36,8 @@ public class AddNoteActivity extends ActionBarActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.add_note, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     /**
-     * A placeholder fragment containing a simple view.
+     * A placeholder fragment containing a the view for adding a note.
      */
     public static class PlaceholderFragment extends Fragment {
         private int mParentID;
@@ -103,7 +81,7 @@ public class AddNoteActivity extends ActionBarActivity {
             EditText editText = (EditText) getActivity().findViewById(R.id.editNoteText);
             Editable editable = editText.getText();
 
-            return editable != null ? editable.toString() : "";
+            return editable != null ? editable.toString() : getActivity().getString(R.string.empty_string);
         }
 
         private void handleSaveButton(Button view) {
@@ -111,6 +89,9 @@ public class AddNoteActivity extends ActionBarActivity {
             saveItemTask.execute();
         }
 
+        /**
+         * A task that sends the data to the web service and saves the note.
+         */
         public class SaveItemTask extends AsyncTask<Void, Void, NoteModel> {
             private Activity mActivity;
             private ProgressDialog dialog;
@@ -131,7 +112,7 @@ public class AddNoteActivity extends ActionBarActivity {
             @Override
             protected void onPreExecute() {
                 // TODO i18n
-                this.dialog.setMessage("Please wait.. Saving note..");
+                this.dialog.setMessage(mActivity.getString(R.string.save_note_text));
                 this.dialog.show();
             }
 
@@ -140,7 +121,7 @@ public class AddNoteActivity extends ActionBarActivity {
                 try {
                     NoteModel noteModel = new NoteModel();
                     noteModel.text = this.mNoteContent;
-                    String serviceURL = "notes/add?itemId=" + this.mItemId;
+                    String serviceURL = mActivity.getString(R.string.add_note_service_url) + this.mItemId;
 
                     HttpRequester requester = new HttpRequester(this.context);
                     NoteModel model = requester.Post(serviceURL, NoteModel.class, this.mSessionKey, noteModel);

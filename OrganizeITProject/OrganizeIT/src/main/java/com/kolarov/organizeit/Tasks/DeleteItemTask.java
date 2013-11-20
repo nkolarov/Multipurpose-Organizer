@@ -7,43 +7,43 @@ import android.os.AsyncTask;
 
 import com.kolarov.organizeit.HttpRequester;
 import com.kolarov.organizeit.Models.ItemShortModel;
-import com.kolarov.organizeit.Models.LocationModel;
+import com.kolarov.organizeit.R;
 import com.kolarov.organizeit.UserStatusManager;
 
 /**
  * Created by N.Kolarov on 13-11-19.
+ *  A task that sends the data to the web service and deletes the item.
  */
 public class DeleteItemTask extends AsyncTask<Void, Void, ItemShortModel> {
     private Activity mActivity;
     private ProgressDialog dialog;
-    private Context context;
+    private Context mContext;
     private int mItemId;
     private String mSessionKey;
 
     public DeleteItemTask(Activity activity,  int itemId) {
         this.mActivity = activity;
-        this.context = this.mActivity;
+        this.mContext = this.mActivity;
         this.mItemId = itemId;
-        this.mSessionKey = new UserStatusManager(context).getSessionKey();
-        this.dialog = new ProgressDialog(this.context);
+        this.mSessionKey = new UserStatusManager(mContext).getSessionKey();
+        this.dialog = new ProgressDialog(this.mContext);
     }
 
     @Override
     protected void onPreExecute() {
         // TODO i18n
-        this.dialog.setMessage("Please wait.. Deleting item..");
+        this.dialog.setMessage(mActivity.getString(R.string.delete_item_task_message));
         this.dialog.show();
     }
 
     @Override
     protected ItemShortModel doInBackground(Void... params) {
         try {
-            String serviceURL = "items/delete?itemId=" + this.mItemId;
+            String serviceURL = mActivity.getString(R.string.delete_item_service_url) + this.mItemId;
 
-            HttpRequester requester = new HttpRequester(this.context);
+            HttpRequester requester = new HttpRequester(this.mContext);
             ItemShortModel model = requester.Delete(serviceURL, ItemShortModel.class, this.mSessionKey);
 
-            int a = 5;
             return model;
         } catch (Exception e) {
             return null;

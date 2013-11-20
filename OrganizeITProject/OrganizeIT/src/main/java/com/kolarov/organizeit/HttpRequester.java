@@ -1,16 +1,11 @@
 package com.kolarov.organizeit;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.provider.Contacts;
-
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.kolarov.organizeit.Models.ItemModel;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
@@ -20,7 +15,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
-import org.json.JSONObject;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -28,6 +22,7 @@ import java.util.ArrayList;
 
 /**
  * Created by N.Kolarov on 13-11-11.
+ * Http requester gives the ability to use http operations - POST/GET.
  */
 public class HttpRequester {
 
@@ -43,6 +38,9 @@ public class HttpRequester {
         this.client = new DefaultHttpClient();
     }
 
+    /**
+     * Get an item from given url.
+     */
     public <T> T Get( String serviceUrl,  Class<T> type, String sessionKey){
         HttpGet httpGet = new HttpGet(this.baseUrl + serviceUrl);
         httpGet.setHeader(HTTP.CONTENT_TYPE, CONTENT_TYPE_JSON);
@@ -68,6 +66,9 @@ public class HttpRequester {
         }
     }
 
+    /**
+     * Get an item collection from given url.
+     */
     public <T> Iterable<T> GetMany( String serviceUrl,  Class<T> type, String sessionKey){
         HttpGet httpGet = new HttpGet(this.baseUrl + serviceUrl);
         httpGet.setHeader(HTTP.CONTENT_TYPE, CONTENT_TYPE_JSON);
@@ -90,7 +91,6 @@ public class HttpRequester {
                     result.add(current);
                 }
 
-                int a = 5; // debug;
                 return result;
             } else {
                 return null;
@@ -101,6 +101,9 @@ public class HttpRequester {
         }
     }
 
+    /**
+     * Posts an item at given url.
+     */
     public <T> T Post( String serviceUrl,  Class<T> type, String sessionKey, Object data){
         HttpPost httpPost = new HttpPost(this.baseUrl + serviceUrl);
         httpPost.setHeader(HTTP.CONTENT_TYPE, CONTENT_TYPE_JSON);
@@ -118,7 +121,6 @@ public class HttpRequester {
             }
 
             HttpResponse response = this.client.execute(httpPost);
-            int a = 5; // debug
 
             if (response != null){
                 Gson gson = new Gson();
@@ -135,6 +137,9 @@ public class HttpRequester {
         }
     }
 
+    /**
+     * Makes a delete http request at given url.
+     */
     public <T> T Delete( String serviceUrl,  Class<T> type, String sessionKey){
         HttpDelete httpDelete = new HttpDelete(this.baseUrl + serviceUrl);
         httpDelete.setHeader(HTTP.CONTENT_TYPE, CONTENT_TYPE_JSON);
@@ -145,7 +150,6 @@ public class HttpRequester {
         try {
 
             HttpResponse response = this.client.execute(httpDelete);
-            int a = 5; // debug
 
             if (response != null){
                 Gson gson = new Gson();

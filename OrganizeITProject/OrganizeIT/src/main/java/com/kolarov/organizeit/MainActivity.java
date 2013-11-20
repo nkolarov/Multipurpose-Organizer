@@ -27,16 +27,9 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // if (!isNetworkAvailable()){ // debug
-        if (isNetworkAvailable()){
-            String sessionKey = getSessionKey();
-            if (sessionKey == null || sessionKey == ""){
-                Intent intent = new Intent(this, LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
+        if (isNetworkAvailable()) {
 
+            checkUserSession();
             setContentView(R.layout.activity_main);
 
             if (savedInstanceState == null) {
@@ -45,9 +38,18 @@ public class MainActivity extends ActionBarActivity {
                         .commit();
             }
 
-            //new LoginTask(MainActivity.this).execute();
-        }else{
+        } else {
             showErrorDialogAndQuit();
+        }
+    }
+
+    private void checkUserSession() {
+        String sessionKey = getSessionKey();
+        if (sessionKey == null || sessionKey == "") {
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         }
     }
 
@@ -93,28 +95,8 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     /**
-     * A placeholder fragment containing a simple view.
+     * A placeholder fragment containing a the main view.
      */
     public static class PlaceholderFragment extends Fragment {
         private Activity mActivity;
@@ -124,7 +106,7 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             setupButtonHandlers(rootView);
 

@@ -31,5 +31,25 @@
     <string name="notes_label">Notes:</string>
     <string name="title_label">Title:</string>
     <string name="level_up_title">... Level Up</string>
+    <string name="new_element_label">Enter new Element Details:</string>
+    <string name="new_type_label">Enter new Type Details:</string>
+    <string name="empty_string" />
+    <string name="add_items_service_url">items/add</string>
+    <string name="save_item_message">Please wait.. Saving item..</string>
+    <string name="save_note_text">Please wait.. Saving note..</string>
+    <string name="add_note_service_url">notes/add?itemId=</string>
+    <string name="delete_item_task_message">Please wait.. Deleting item..</string>
+    <string name="delete_item_service_url">items/delete?itemId=</string>
+    <string name="save_item_location_serice_url">locations/set?itemId=</string>
+    <string name="save_item_location_message">Please wait.. Saving item location..</string>
+    <string name="maps_not_found_message">Error! Google Maps application not found!</string>
+    <string name="loading_details_message">Please wait.. Loading details..</string>
+    <string name="load_tem_details_Service_url">items/details?elementId=</string>
+    <string name="items_label"> items</string>
+    <string name="delete_confirmation_title">Delete item and all its content?</string>
+    <string name="confirm_delete_button">Yes</string>
+    <string name="cancel_delete_button">No</string>
+    <string name="fetch_data_message">Please wait.. Fetching data..</string>
+    <string name="signin_service_url">users/signin/</string>
 
 </resources>

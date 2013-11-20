@@ -25,8 +25,9 @@ import java.util.ArrayList;
 
 /**
  * Created by N.Kolarov on 13-11-16.
+ * An adapter for setup list item data.
  */
-public class ItemListAdapter extends BaseAdapter{
+public class ItemListAdapter extends BaseAdapter {
     private Context mContext;
 
     private LayoutInflater mLayoutInflater;
@@ -40,8 +41,7 @@ public class ItemListAdapter extends BaseAdapter{
 
     public ItemListAdapter(Context context) {
         mContext = context;
-        mLayoutInflater = (LayoutInflater) mContext
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
@@ -80,39 +80,38 @@ public class ItemListAdapter extends BaseAdapter{
             }
         });
 
-        ImageView imageView = (ImageView)
-                itemView.findViewById(R.id.listImage);
-        TextView titleText = (TextView)
-                itemView.findViewById(R.id.listTitle);
-        TextView descriptionText = (TextView)
-                itemView.findViewById(R.id.listDescription);
-
+        ImageView imageView = (ImageView) itemView.findViewById(R.id.listImage);
+        TextView titleText = (TextView) itemView.findViewById(R.id.listTitle);
+        TextView descriptionText = (TextView) itemView.findViewById(R.id.listDescription);
+        String title = mEntries.get(position).title;
         String imageFile = getImageFileName(position);
 
         loadTypeImage(imageView, imageFile);
-
-        String title = mEntries.get(position).title;
         titleText.setText(title);
+        handleDeleteButton(position, itemView, title);
+        setupDescription(position, descriptionText);
 
+        return itemView;
+    }
+
+    private void handleDeleteButton(int position, RelativeLayout itemView, String title) {
         String levelUpTitle = mContext.getString(R.string.level_up_title);
-        if(title.equals(levelUpTitle) && mEntries.get(position).childcount == 0){
+        if (title.equals(levelUpTitle) && mEntries.get(position).childcount == 0) {
             hideDeleteButton(itemView);
         } else {
             showDeleteButton(itemView);
         }
+    }
 
+    private void setupDescription(int position, TextView descriptionText) {
         String description;
         int childsCount = mEntries.get(position).childcount;
         if (childsCount > 0)
-            description = childsCount + " items";
+            description = childsCount + mContext.getString(R.string.items_label);
         else
-            description = "";
+            description = mContext.getString(R.string.empty_string);
 
-        // if (description.trim().length() != 0)
-            descriptionText.setText(description);
-
-
-        return itemView;
+        descriptionText.setText(description);
     }
 
     private void showDeleteButton(RelativeLayout itemView) {
@@ -127,7 +126,7 @@ public class ItemListAdapter extends BaseAdapter{
         deleteBtn.setVisibility(View.INVISIBLE);
     }
 
-    private void deleteItem(View view, int itemPosition){
+    private void deleteItem(View view, int itemPosition) {
         this.mItemPositionToDelete = itemPosition;
         this.mItemIdToDelete = getItemId(itemPosition);
         createDialogRemoveConfirm(DIALOG_REMOVE_ITEM).show();
@@ -149,20 +148,18 @@ public class ItemListAdapter extends BaseAdapter{
     private String getImageFileName(int position) {
         String imageFile;
         int type = mEntries.get(position).itemtype;
-        if (type == 1){
+        if (type == 1) {
             imageFile = mContext.getString(R.string.item_type_asset_name);
-        }
-        else {
+        } else {
             imageFile = mContext.getString(R.string.item_element_asset_name);
         }
         return imageFile;
     }
 
     public void upDateEntries(ArrayList<ItemModel> entries) {
-        if (entries == null){
+        if (entries == null) {
             mEntries = new ArrayList<ItemModel>();
-        }
-        else {
+        } else {
             mEntries = entries;
         }
 
@@ -172,21 +169,21 @@ public class ItemListAdapter extends BaseAdapter{
     private Dialog createDialogRemoveConfirm(final int dialogRemove) {
         return new AlertDialog.Builder(mContext)
                 .setIcon(mContext.getResources().getDrawable(R.drawable.abc_ic_clear_normal))
-                .setTitle("Delete item and all its content?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setTitle(mContext.getString(R.string.delete_confirmation_title))
+                .setPositiveButton(mContext.getString(R.string.confirm_delete_button), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         handleRemoveConfirm(dialogRemove);
                     }
                 })
-                .setNegativeButton("No", null)
+                .setNegativeButton(mContext.getString(R.string.cancel_delete_button), null)
                 .create();
     }
 
     private void handleRemoveConfirm(int dialogRemove) {
-        if(dialogRemove == DIALOG_REMOVE_ITEM){
+        if (dialogRemove == DIALOG_REMOVE_ITEM) {
             mEntries.remove(this.mItemPositionToDelete);
             this.upDateEntries(mEntries);
-            DeleteItemTask deleteItemTask = new DeleteItemTask((Activity) mContext, (int)this.mItemIdToDelete);
+            DeleteItemTask deleteItemTask = new DeleteItemTask((Activity) mContext, (int) this.mItemIdToDelete);
             deleteItemTask.execute();
         }
     }

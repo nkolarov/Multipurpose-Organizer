@@ -12,6 +12,7 @@ import android.os.Looper;
 
 /**
  * Created by N.Kolarov on 13-11-18.
+ * A class helping to get the current device location.
  */
 public class MyLocation {
     LocationManager mLocationManager;
@@ -99,7 +100,9 @@ public class MyLocation {
         this.mContext = c;
     }
 
-
+    /**
+     *  A task that gets the the current device location.
+     */
     public class GetLastLocation extends AsyncTask<Context, Void, Void> {
 
         ProgressDialog dialog = new ProgressDialog(mContext);
