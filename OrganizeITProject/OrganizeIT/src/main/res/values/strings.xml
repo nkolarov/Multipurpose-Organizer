@@ -25,7 +25,7 @@
     <string name="cancel_button_label">Cancel</string>
     <string name="selected_item_id">SelectedItemId</string>
     <string name="item_id">ItemId</string>
-    <string name="title_activity_add_note">AddNoteActivity</string>
+    <string name="title_activity_add_note">AddNote</string>
     <string name="note_enter_hint">Enter text here</string>
     <string name="location_label">Location:</string>
     <string name="notes_label">Notes:</string>
@@ -51,6 +51,6 @@
     <string name="cancel_delete_button">No</string>
     <string name="fetch_data_message">Please wait.. Fetching data..</string>
     <string name="signin_service_url">users/signin/</string>
-    <string name="title_activity_about">AboutActivity</string>
+    <string name="title_activity_about">About</string>
 
 </resources>
