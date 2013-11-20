@@ -37,6 +37,11 @@ namespace Organizer.Services.Controllers
 
         private static readonly Random rand = new Random();
 
+        /// <summary>
+        /// Registers a user.
+        /// </summary>
+        /// <param name="model">User model.</param>
+        /// <returns>The registered user model.</returns>
         [ActionName("register")]
         public HttpResponseMessage PostRegisterUser(UserModel model)
         {
@@ -85,6 +90,11 @@ namespace Organizer.Services.Controllers
             return responseMsg;
         }
 
+        /// <summary>
+        /// Logins a user.
+        /// </summary>
+        /// <param name="model">User model.</param>
+        /// <returns>The logged user model.</returns>
         [ActionName("login")]
         public HttpResponseMessage PostLoginUser(UserModel model)
         {
@@ -123,8 +133,12 @@ namespace Organizer.Services.Controllers
             return responseMsg;
         }
 
+        /// <summary>
+        /// Login or register a user.
+        /// </summary>
+        /// <param name="model">User model.</param>
+        /// <returns>The user model.</returns>
         [ActionName("signin")]
-        // Login or register
         public HttpResponseMessage PostSigninUser(UserModel model)
         {
             var responseMsg = this.PerformOperationAndHandleExceptions(
@@ -179,6 +193,11 @@ namespace Organizer.Services.Controllers
             return responseMsg;
         }
 
+        /// <summary>
+        /// Logouts a user.
+        /// </summary>
+        /// <param name="sessionKey">User session key.</param>
+        /// <returns>THe logged out user model.</returns>
         [ActionName("logout")]
         public HttpResponseMessage PutLogoutUser([ValueProvider(typeof(HeaderValueProviderFactory<string>))] string sessionKey)
         {

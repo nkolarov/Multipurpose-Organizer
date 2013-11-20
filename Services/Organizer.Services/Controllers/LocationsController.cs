@@ -13,6 +13,13 @@ namespace Organizer.Services.Controllers
 {
     public class LocationsController : BaseApiController
     {
+        /// <summary>
+        /// Sets the location of the item by given location model.
+        /// </summary>
+        /// <param name="itemId">The item id.</param>
+        /// <param name="locationModel">A location model.</param>
+        /// <param name="sessionKey">A session key.</param>
+        /// <returns>The saved location.</returns>
         [HttpPost]
         [ActionName("set")]
         public LocationModel PostAddLocation(int itemId, LocationModel locationModel,
@@ -40,7 +47,7 @@ namespace Organizer.Services.Controllers
                     this.Data.Locations.Add(location);
                     this.Data.SaveChanges();
                 }
-                else 
+                else
                 {
                     if (locationEntry.Latitude != locationModel.Latitude)
                     {
@@ -53,9 +60,7 @@ namespace Organizer.Services.Controllers
                     }
 
                     this.Data.SaveChanges();
-                }
-
-                
+                }                
 
                 return locationModel;
             });
@@ -63,6 +68,12 @@ namespace Organizer.Services.Controllers
             return responseMsg;
         }
 
+        /// <summary>
+        /// Deletes a location by given id.
+        /// </summary>
+        /// <param name="id">The location id.</param>
+        /// <param name="sessionKey">A session key.</param>
+        /// <returns>THe deleted location model.</returns>
         [HttpDelete]
         [ActionName("delete")]
         public HttpResponseMessage DeleteLocation(int id,
@@ -87,6 +98,12 @@ namespace Organizer.Services.Controllers
             return responseMsg;
         }
 
+        /// <summary>
+        /// Deletes a location by given location model.
+        /// </summary>
+        /// <param name="locationModel">The location model.</param>
+        /// <param name="sessionKey">A session key.</param>
+        /// <returns>THe updated location model.</returns>
         [HttpPut]
         [ActionName("update")]
         public LocationModel PutUpdateLocation(LocationModel locationModel,

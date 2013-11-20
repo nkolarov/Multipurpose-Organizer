@@ -13,6 +13,11 @@ namespace Organizer.Services.Controllers
 {
     public class ItemsController : BaseApiController
     {
+        /// <summary>
+        /// Get all items of the current user. User is determinited by the session key.
+        /// </summary>
+        /// <param name="sessionKey">A session key.</param>
+        /// <returns>All items.</returns>
         [HttpGet]
         [ActionName("all")]
         public IQueryable<ItemModel> GetAll(
@@ -31,6 +36,11 @@ namespace Organizer.Services.Controllers
             return responseMsg;
         }
 
+        /// <summary>
+        /// Get compact info for all items of the current user. User is determinited by the session key.
+        /// </summary>
+        /// <param name="sessionKey">A session key.</param>
+        /// <returns>All items.</returns>
         [HttpGet]
         [ActionName("all-compact")]
         public IQueryable<ItemShortModel> GetAllShortInfo(
@@ -49,6 +59,11 @@ namespace Organizer.Services.Controllers
             return responseMsg;
         }
 
+        /// <summary>
+        /// Get all items of the current user for given parentId. User is determinited by the session key.
+        /// </summary>
+        /// <param name="sessionKey">A session key.</param>
+        /// <returns>All items that have the given parentId.</returns>
         [HttpGet]
         [ActionName("forParent")]
         public IQueryable<ItemShortModel> GetShortItemsForParent(int? parentID,
@@ -88,57 +103,11 @@ namespace Organizer.Services.Controllers
             return responseMsg;
         }
 
-        [HttpGet]
-        [ActionName("rootLevel")]
-        public IQueryable<ItemModel> GetTypesForRootLevel(
-            [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string sessionKey)
-        {
-            var responseMsg = this.PerformOperationAndHandleExceptions(() =>
-            {
-                var user = GetAndValidateUser(sessionKey);
-                var rootElement = this.GetAll(sessionKey).SingleOrDefault(item => item.ParentId == null);
-                var itemsEntities = this.GetAll(sessionKey).Where(item => item.ParentId == rootElement.Id).Where(item => item.ItemType == ItemType.Type);
-
-                return itemsEntities.OrderByDescending(item => item.Id);
-            });
-
-            return responseMsg;
-        }
-
-        [HttpGet]
-        [ActionName("typesAtLevel")]
-        public IQueryable<ItemModel> GetTypesForParent(int parentID,
-            [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string sessionKey)
-        {
-            var responseMsg = this.PerformOperationAndHandleExceptions(() =>
-            {
-
-                var user = GetAndValidateUser(sessionKey);
-                var itemsEntities = this.GetAll(sessionKey).Where(item => item.ParentId == parentID).Where(item => item.ItemType == ItemType.Type);
-
-                return itemsEntities.OrderByDescending(item => item.Id);
-            });
-
-            return responseMsg;
-        }
-
-        [HttpGet]
-        [ActionName("elementsAtLevel")]
-        public IQueryable<ItemModel> GetElementsForParent(int parentID,
-            [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string sessionKey)
-        {
-            var responseMsg = this.PerformOperationAndHandleExceptions(() =>
-            {
-
-                var user = GetAndValidateUser(sessionKey);
-                var itemsEntities = this.GetAll(sessionKey).Where(item => item.ParentId == parentID).Where(item => item.ItemType == ItemType.Element);
-
-                return itemsEntities.OrderByDescending(item => item.Id);
-            });
-
-            return responseMsg;
-        }
-
+        /// <summary>
+        /// Get the details for given item. 
+        /// </summary>
+        /// <param name="sessionKey">A session key.</param>
+        /// <returns>The details for the item..</returns>
         [HttpGet]
         [ActionName("details")]
         public ItemDetailsModel GetElementDetails(int elementId,
@@ -163,21 +132,6 @@ namespace Organizer.Services.Controllers
                 itemDetails.Title = itemEntity.Title;
                 itemDetails.ItemType = itemEntity.ItemType;
                 itemDetails.ImagesCount = itemEntity.Images.Count();
-
-                /*
-                if (itemEntity.Images.Count() > 0)
-                {
-                    itemDetails.Images =
-                        from image in itemEntity.Images
-                        select new ImageModel()
-                        {
-                            Id = image.Id,
-                            ImageData = image.ImageData,
-                            Title = image.Title
-                        };
-                }
-                 */
-
                 itemDetails.NotesCount = itemEntity.Notes.Count();
 
                 if (itemEntity.Notes.Count() > 0)
@@ -202,6 +156,12 @@ namespace Organizer.Services.Controllers
             return responseMsg;
         }
 
+        /// <summary>
+        /// Adds an item by given model.
+        /// </summary>
+        /// <param name="itemCreateModel">The model.</param>
+        /// <param name="sessionKey">A session key.</param>
+        /// <returns>The created item.</returns>
         [HttpPost]
         [ActionName("add")]
         public ItemModel PostAddItem(ItemCreateModel itemCreateModel,
@@ -235,6 +195,12 @@ namespace Organizer.Services.Controllers
             return responseMsg;
         }
 
+        /// <summary>
+        /// Deletes an item recursively by given itemId.
+        /// </summary>
+        /// <param name="itemId">The itemId.</param>
+        /// <param name="sessionKey">A session key.</param>
+        /// <returns>The deleted item model.</returns>
         [HttpDelete]
         [ActionName("delete")]
         public HttpResponseMessage DeleteItem(int itemId,
@@ -259,33 +225,12 @@ namespace Organizer.Services.Controllers
             return responseMsg;
         }
 
-        private void DeleteItem(int itemId)
-        {
-            var item = this.Data.Items.All().SingleOrDefault(it => it.Id == itemId);
-            if (item.Location != null)
-            {
-                this.Data.Locations.Delete(item.Location);
-                item.Location = null;
-                item.LocationId = null;
-            }
-
-            while(item.Images.Count > 0){
-                this.Data.Images.Delete(item.Images.First());
-            }
-
-            while (item.Notes.Count > 0)
-            {
-                this.Data.Notes.Delete(item.Notes.First());
-            }
-
-            while (item.Childrens.Count > 0)
-            {
-                DeleteItem(item.Childrens.First().Id);
-            }
-
-            this.Data.Items.Delete(item);
-        }
-
+        /// <summary>
+        /// Deletes an item recursively by given model.
+        /// </summary>
+        /// <param name="itemUpdateModel">The model.</param>
+        /// <param name="sessionKey">A session key.</param>
+        /// <returns>The updated item model.</returns>
         [HttpPut]
         [ActionName("update")]
         public ItemUpdateModel PutUpdateItem(ItemUpdateModel itemUpdateModel,
@@ -313,6 +258,34 @@ namespace Organizer.Services.Controllers
             });
 
             return responseMsg;
-        }        
+        }
+
+        private void DeleteItem(int itemId)
+        {
+            var item = this.Data.Items.All().SingleOrDefault(it => it.Id == itemId);
+            if (item.Location != null)
+            {
+                this.Data.Locations.Delete(item.Location);
+                item.Location = null;
+                item.LocationId = null;
+            }
+
+            while (item.Images.Count > 0)
+            {
+                this.Data.Images.Delete(item.Images.First());
+            }
+
+            while (item.Notes.Count > 0)
+            {
+                this.Data.Notes.Delete(item.Notes.First());
+            }
+
+            while (item.Childrens.Count > 0)
+            {
+                DeleteItem(item.Childrens.First().Id);
+            }
+
+            this.Data.Items.Delete(item);
+        }
     }
 }

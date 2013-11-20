@@ -12,6 +12,13 @@
 
     public class NotesController : BaseApiController
     {
+        /// <summary>
+        /// Adds a note by given item id and note model.
+        /// </summary>
+        /// <param name="itemId">The item id.</param>
+        /// <param name="noteModel">The note model.</param>
+        /// <param name="sessionKey">A session key.</param>
+        /// <returns>The created note model.</returns>
         [HttpPost]
         [ActionName("add")]
         public NoteModel PostAddNote(int itemId, NoteModel noteModel,
@@ -40,6 +47,12 @@
             return responseMsg;
         }
 
+        /// <summary>
+        /// Deletes a note by given id.
+        /// </summary>
+        /// <param name="id">The id.</param>
+        /// <param name="sessionKey">A session key.</param>
+        /// <returns>The deleted note model.</returns>
         [HttpDelete]
         [ActionName("delete")]
         public HttpResponseMessage DeleteNote(int id,
@@ -64,6 +77,12 @@
             return responseMsg;
         }
 
+        /// <summary>
+        /// Deletes a note by given id and note model.
+        /// </summary>
+        /// <param name="id">The id.</param>
+        /// <param name="sessionKey">A session key.</param>
+        /// <returns>The updated note model.</returns>
         [HttpPut]
         [ActionName("update")]
         public NoteModel PutUpdateNote(NoteModel noteModel,
