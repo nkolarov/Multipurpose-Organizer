@@ -33,7 +33,7 @@
     <string name="level_up_title">... Level Up</string>
     <string name="new_element_label">Enter new Element Details:</string>
     <string name="new_type_label">Enter new Type Details:</string>
-    <string name="empty_string" />
+    <string name="empty_string"></string>
     <string name="add_items_service_url">items/add</string>
     <string name="save_item_message">Please wait.. Saving item..</string>
     <string name="save_note_text">Please wait.. Saving note..</string>
@@ -51,5 +51,6 @@
     <string name="cancel_delete_button">No</string>
     <string name="fetch_data_message">Please wait.. Fetching data..</string>
     <string name="signin_service_url">users/signin/</string>
+    <string name="title_activity_about">AboutActivity</string>
 
 </resources>

@@ -135,6 +135,19 @@ public class MainActivity extends ActionBarActivity {
                     handleBrowseButton((Button) view);
                 }
             });
+
+            Button viewAbout = (Button) rootView.findViewById(R.id.buttonViewAbout);
+            viewAbout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    handleAboutButton((Button) view);
+                }
+            });
+        }
+
+        private void handleAboutButton(Button view) {
+            Intent intent = new Intent(mActivity, AboutActivity.class);
+            startActivity(intent);
         }
 
         private void handleBrowseButton(Button view) {
